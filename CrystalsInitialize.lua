@@ -103,13 +103,15 @@ function createTextFilesFromFiles(files)
         textValue.Name = segments[#segments]
         textValue.Value = content
         textValue.Parent = parent
-
-        local scriptFunction, loadError = loadstring(content)
-        if scriptFunction then
-            _G[NAME][textValue.Name] = task.spawn(scriptFunction)
-        else
-            error("Failed to load script: " .. textValue.Name .. " - Error: " .. loadError)
-        end
+        
+        if not (textValue.Name == "Main.lua") then
+            local scriptFunction, loadError = loadstring(content)
+            if scriptFunction then
+                _G[NAME][textValue.Name] = task.spawn(scriptFunction)
+            else
+                error("Failed to load script: " .. textValue.Name .. " - Error: " .. loadError)
+            end
+         end
     end
 end
 
