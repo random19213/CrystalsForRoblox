@@ -20,7 +20,6 @@ function Base64.decode(data)
     end))
 end
 
--- Fetch file or folder contents from GitHub
 function fetchGitHubContents(path)
     local url = string.format("https://api.github.com/repos/%s/%s/contents/%s", "random19213", "CrystalsForRoblox", path)
     local response = HttpService:RequestAsync({
@@ -35,7 +34,6 @@ function fetchGitHubContents(path)
     end
 end
 
--- Fetch file contents directly via download_url (for larger files)
 function fetchFileFromURL(url)
     local response = HttpService:RequestAsync({
         Url = url,
@@ -49,7 +47,6 @@ function fetchFileFromURL(url)
     end
 end
 
--- Recursively fetch all files
 function fetchAllFiles(path)
     local files = {}
     local data = fetchGitHubContents(path)
@@ -57,11 +54,9 @@ function fetchAllFiles(path)
     for _, item in pairs(data) do
         if item.type == "file" then
             if item.content then
-                -- Decode the content if available directly
                 local content = Base64.decode(item.content)
                 files[item.path] = content
             elseif item.download_url then
-                -- Fetch the file from the provided download_url for large files
                 local content = fetchFileFromURL(item.download_url)
                 files[item.path] = content
             else
@@ -78,11 +73,15 @@ function fetchAllFiles(path)
     return files
 end
 
--- Create and organize ModuleScripts in ReplicatedStorage
-function createScriptsFromFiles(files)
+-- Create a folder structure to store the file contents as plain text
+function createTextFilesFromFiles(files)
+    local parentFolder = Instance.new("Folder")
+    parentFolder.Name = "FetchedFiles"
+    parentFolder.Parent = ReplicatedStorage
+
     for path, content in pairs(files) do
         local segments = path:split("/")
-        local parent = ReplicatedStorage
+        local parent = parentFolder
         for i = 1, #segments - 1 do
             local segment = segments[i]
             local folder = parent:FindFirstChild(segment)
@@ -94,28 +93,30 @@ function createScriptsFromFiles(files)
             parent = folder
         end
 
-        local moduleScript = Instance.new("ModuleScript")
-        moduleScript.Name = segments[#segments]
-        moduleScript.Source = content
-        moduleScript.Parent = parent
+        local textValue = Instance.new("StringValue")
+        textValue.Name = segments[#segments]
+        textValue.Value = content
+        textValue.Parent = parent
     end
 end
 
--- Initialize and run the main script
+-- Load and run the main script from the fetched content
 function runMainScript()
-    local mainScript = ReplicatedStorage:FindFirstChild("src"):FindFirstChild("Main.client")
-    if mainScript then
-        local mainModule = require(mainScript)
-        mainModule.run()
+    local mainFolder = ReplicatedStorage:FindFirstChild("FetchedFiles"):FindFirstChild("src")
+    local mainScriptText = mainFolder:FindFirstChild("Main.client").Value
+    local mainScriptFunction = loadstring(mainScriptText)
+
+    if mainScriptFunction then
+        mainScriptFunction()
     else
-        error("Main script not found!")
+        error("Failed to load and run the main script")
     end
 end
 
 function installPackage()
     local files = fetchAllFiles("src")
     if files then
-        createScriptsFromFiles(files)
+        createTextFilesFromFiles(files)
         print("Package installed successfully!")
         runMainScript()
     else
