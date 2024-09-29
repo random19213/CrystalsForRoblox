@@ -8,6 +8,8 @@ local s, e = pcall(function()
     end
 end)
 
+print(_G[_G.CLIENT_NAME])
+
 if s then
     print("Successfully required all modules")
 else
