@@ -7,10 +7,7 @@ _G[_G.CLIENT_NAME] = {}
 
 local function fetchFileFromRawURL(path)
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
-    local response = HttpService:RequestAsync({
-        Url = url,
-        Method = "GET"
-    })
+    local response = game:HttpGet(url)
 
     if response.Success then
         return response.Body
@@ -23,10 +20,7 @@ local function fetchAllFiles(directory)
     local files = {}
 
     local url = string.format("https://api.github.com/repos/%s/%s/contents/%s", "random19213", "CrystalsForRoblox", directory)
-    local response = HttpService:RequestAsync({
-        Url = url,
-        Method = "GET"
-    })
+    local response = game:HttpGet(url)
 
     if not response.Success then
         error("Failed to fetch directory contents: " .. response.StatusCode)
