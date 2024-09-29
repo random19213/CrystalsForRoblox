@@ -37,11 +37,12 @@ local function fetchAllFiles(directory)
     for _, item in pairs(data) do
         if item.type == "file" then
             local content = fetchFileFromRawURL(item.path)
-            files[item.path] = content
+            files[item.path] = content 
         elseif item.type == "dir" then
+
             local subFiles = fetchAllFiles(item.path)
             for subPath, content in pairs(subFiles) do
-                files[subPath] = content
+                files[subPath] = content  
             end
         end
     end
@@ -57,6 +58,7 @@ local function createTextFilesFromFiles(files)
     for path, content in pairs(files) do
         local segments = path:split("/")
         local parent = parentFolder
+
         for i = 1, #segments - 1 do
             local segment = segments[i]
             local folder = parent:FindFirstChild(segment)
@@ -65,17 +67,18 @@ local function createTextFilesFromFiles(files)
                 folder.Name = segment
                 folder.Parent = parent
             end
-            parent = folder
+            parent = folder 
         end
 
         local textValue = Instance.new("StringValue")
         textValue.Name = segments[#segments]
         textValue.Value = content
-        textValue.Parent = parent
+        textValue.Parent = parent 
 
         _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
     end
 end
+
 
 local function runMainScript()
     print(_G[_G.CLIENT_NAME])
