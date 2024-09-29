@@ -3,11 +3,8 @@ print("Requiring Modules")
 
 local s, e = pcall(function()
     for name, content in _G[_G.CLIENT_NAME] do
-        if name == "Main.lua" then continue end
-        print(name)
-        task.spawn(function()
-            _G[_G.CLIENT_NAME][name] = (loadstring(content)()
-        end)
+        if _G[_G.CLIENT_NAME][name] == _G[_G.CLIENT_NAME]["Main.lua"] then continue end
+        _G[_G.CLIENT_NAME][name] = loadstring(content)()
     end
 end)
 
