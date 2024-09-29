@@ -5,7 +5,7 @@
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": {
+        "Crystals4Bedwars": {
           "$path": "src"
         }
       }
