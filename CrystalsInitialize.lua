@@ -116,6 +116,7 @@ function createTextFilesFromFiles(files)
 end
 
 function runMainScript()
+    print(_G[NAME])
     loadstring(_G[NAME]["Main.lua"].Value)
 end
 
