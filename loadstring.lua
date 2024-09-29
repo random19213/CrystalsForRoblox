@@ -1,1 +1,1 @@
-loadstring(game:GetService("HttpService"):GetAsync("https://github.com/random19213/CrystalsForRoblox/blob/main/src/Main.client.luau", true))()
+loadstring(game:GetService("HttpService"):GetAsync("https://raw.githubusercontent.com/random19213/CrystalsForRoblox/main/CrystalsInitialize.lua"))()
