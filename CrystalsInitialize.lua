@@ -101,7 +101,7 @@ function createTextFilesFromFiles(files)
 
         local scriptFunction, loadError = loadstring(content)
         if scriptFunction then
-            _G.Crystals4Bedwars[textValue.Name] = scriptFunction
+            _G.Crystals4Bedwars[textValue.Name] = task.spawn(scriptFunction)
         else
             error("Failed to load script: " .. textValue.Name .. " - Error: " .. loadError)
         end
