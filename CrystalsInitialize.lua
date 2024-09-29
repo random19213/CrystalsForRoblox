@@ -7,12 +7,12 @@ _G[_G.CLIENT_NAME] = {}
 
 local function fetchFileFromRawURL(path)
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
-    local response = game:HttpGet(url)
+    local s, r = pcall(game.HttpGet, game, url)
 
-    if response.Success then
-        return response.Body
+    if s then
+        return r
     else
-        error("Failed to fetch file from URL: " .. response.StatusCode)
+        error("Failed to fetch file from URL: " .. r)
     end
 end
 
@@ -20,13 +20,13 @@ local function fetchAllFiles(directory)
     local files = {}
 
     local url = string.format("https://api.github.com/repos/%s/%s/contents/%s", "random19213", "CrystalsForRoblox", directory)
-    local response = game:HttpGet(url)
+    local s, r = pcall(game.HttpGet, game, url)
 
-    if not response.Success then
-        error("Failed to fetch directory contents: " .. response.StatusCode)
+    if not s then
+        error("Failed to fetch directory contents: " .. r)
     end
 
-    local data = HttpService:JSONDecode(response.Body)
+    local data = HttpService:JSONDecode(r)
 
     for _, item in pairs(data) do
         if item.type == "file" then
