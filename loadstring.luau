@@ -1,1 +1,1 @@
-loadstring()
+loadstring(game:HttpGet("https://github.com/random19213/CrystalsForRoblox/blob/main/src/Main.client.luau", true))()
