@@ -83,6 +83,8 @@ function createTextFilesFromFiles(files)
     parentFolder.Name = NAME
     parentFolder.Parent = ReplicatedFirst
 
+    _G._runCrystals4BedwarsEvent = Instance.new("BindableEvent")
+
     for path, content in pairs(files) do
         local segments = path:split("/")
         local parent = parentFolder
@@ -112,15 +114,7 @@ function createTextFilesFromFiles(files)
 end
 
 function runMainScript()
-    local mainFolder = ReplicatedFirst:FindFirstChild(NAME):FindFirstChild("src")
-    local mainScriptText = mainFolder:FindFirstChild("Main.lua").Value
-    local mainScriptFunction = loadstring(mainScriptText)
-
-    if mainScriptFunction then
-        mainScriptFunction()
-    else
-        error("Failed to load and run the main script")
-    end
+    _G._runCrystals4BedwarsEvent:Fire()
 end
 
 function installPackage()
