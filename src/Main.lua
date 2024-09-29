@@ -8,10 +8,13 @@ local s, e = pcall(function()
     end
 end)
 
-print(_G[_G.CLIENT_NAME])
-
 if s then
     print("Successfully required all modules")
 else
     print("There was a problem requiring a module", e)
+    return
 end
+
+task.wait(5)
+
+_G[_G.CLIENT_NAME]["UILibrary.lua"].Instance("test instance")
