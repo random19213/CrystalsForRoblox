@@ -1,10 +1,10 @@
-local NAME = "Crystals4Bedwars"
+_G.CLIENT_NAME = "Crystals4Bedwars"
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 
-_G[NAME] = {}
+_G[_G.CLIENT_NAME] = {}
 
 local Base64 = {}
 
@@ -80,7 +80,7 @@ end
 
 function createTextFilesFromFiles(files)
     local parentFolder = Instance.new("Folder")
-    parentFolder.Name = NAME
+    parentFolder.Name = _G.CLIENT_NAME
     parentFolder.Parent = ReplicatedFirst
 
     for path, content in pairs(files) do
@@ -102,22 +102,13 @@ function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent
 
-        _G[NAME][textValue.Name] = textValue.Value
-        
-        if not (textValue.Name == "Main.lua") then
-            local scriptFunction, loadError = loadstring(textValue.Value)
-            if scriptFunction then
-                _G[NAME][textValue.Name] = task.spawn(scriptFunction)
-            else
-                error("Failed to load script: " .. textValue.Name .. " - Error: " .. loadError)
-            end
-         end
+        _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
     end
 end
 
 function runMainScript()
-    print(_G[NAME])
-    loadstring(_G[NAME]["Main.lua"].Value)
+    print(_G[_G.CLIENT_NAME])
+    loadstring(_G[_G.CLIENT_NAME]["Main.lua"].Value)
 end
 
 function installPackage()
