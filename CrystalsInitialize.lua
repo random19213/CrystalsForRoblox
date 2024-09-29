@@ -20,6 +20,7 @@ function Base64.decode(data)
     end))
 end
 
+-- Fetch file or folder contents from GitHub
 function fetchGitHubContents(path)
     local url = string.format("https://api.github.com/repos/%s/%s/contents/%s", "random19213", "CrystalsForRoblox", path)
     local response = HttpService:RequestAsync({
@@ -34,6 +35,21 @@ function fetchGitHubContents(path)
     end
 end
 
+-- Fetch file contents directly via download_url (for larger files)
+function fetchFileFromURL(url)
+    local response = HttpService:RequestAsync({
+        Url = url,
+        Method = "GET"
+    })
+
+    if response.Success then
+        return response.Body
+    else
+        error("Failed to fetch file from URL: " .. response.StatusCode)
+    end
+end
+
+-- Recursively fetch all files
 function fetchAllFiles(path)
     local files = {}
     local data = fetchGitHubContents(path)
@@ -41,10 +57,15 @@ function fetchAllFiles(path)
     for _, item in pairs(data) do
         if item.type == "file" then
             if item.content then
+                -- Decode the content if available directly
                 local content = Base64.decode(item.content)
                 files[item.path] = content
+            elseif item.download_url then
+                -- Fetch the file from the provided download_url for large files
+                local content = fetchFileFromURL(item.download_url)
+                files[item.path] = content
             else
-                error("Content missing in file: " .. item.path)
+                error("No content or download URL found for file: " .. item.path)
             end
         elseif item.type == "dir" then
             local subFiles = fetchAllFiles(item.path)
@@ -57,6 +78,7 @@ function fetchAllFiles(path)
     return files
 end
 
+-- Create and organize ModuleScripts in ReplicatedStorage
 function createScriptsFromFiles(files)
     for path, content in pairs(files) do
         local segments = path:split("/")
@@ -79,6 +101,7 @@ function createScriptsFromFiles(files)
     end
 end
 
+-- Initialize and run the main script
 function runMainScript()
     local mainScript = ReplicatedStorage:FindFirstChild("src"):FindFirstChild("Main.client")
     if mainScript then
@@ -93,6 +116,7 @@ function installPackage()
     local files = fetchAllFiles("src")
     if files then
         createScriptsFromFiles(files)
+        print("Package installed successfully!")
         runMainScript()
     else
         error("Failed to fetch package")
