@@ -1,6 +1,8 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+_G.Crystals4Bedwars = {}
+
 local Base64 = {}
 
 local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -75,7 +77,7 @@ end
 
 function createTextFilesFromFiles(files)
     local parentFolder = Instance.new("Folder")
-    parentFolder.Name = "FetchedFiles"
+    parentFolder.Name = "Crystals4Bedwars"
     parentFolder.Parent = ReplicatedStorage
 
     for path, content in pairs(files) do
@@ -96,6 +98,13 @@ function createTextFilesFromFiles(files)
         textValue.Name = segments[#segments]
         textValue.Value = content
         textValue.Parent = parent
+
+        local scriptFunction, loadError = loadstring(content)
+        if scriptFunction then
+            _G.Crystals4Bedwars[textValue.Name] = scriptFunction
+        else
+            error("Failed to load script: " .. textValue.Name .. " - Error: " .. loadError)
+        end
     end
 end
 
