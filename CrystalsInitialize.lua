@@ -73,7 +73,6 @@ function fetchAllFiles(path)
     return files
 end
 
--- Create a folder structure to store the file contents as plain text
 function createTextFilesFromFiles(files)
     local parentFolder = Instance.new("Folder")
     parentFolder.Name = "FetchedFiles"
@@ -100,10 +99,9 @@ function createTextFilesFromFiles(files)
     end
 end
 
--- Load and run the main script from the fetched content
 function runMainScript()
     local mainFolder = ReplicatedStorage:FindFirstChild("FetchedFiles"):FindFirstChild("src")
-    local mainScriptText = mainFolder:FindFirstChild("Main.client").Value
+    local mainScriptText = mainFolder:FindFirstChild("Main.lua").Value
     local mainScriptFunction = loadstring(mainScriptText)
 
     if mainScriptFunction then
