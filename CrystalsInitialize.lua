@@ -25,21 +25,8 @@ function Base64.decode(data)
     end))
 end
 
-function fetchGitHubContents(path)
-    local url = string.format("https://api.github.com/repos/%s/%s/contents/%s", "random19213", "CrystalsForRoblox", path)
-    local response = HttpService:RequestAsync({
-        Url = url,
-        Method = "GET"
-    })
-
-    if response.Success then
-        return HttpService:JSONDecode(response.Body)
-    else
-        error("Failed to fetch from GitHub: " .. response.StatusCode)
-    end
-end
-
-function fetchFileFromURL(url)
+function fetchFileFromRawURL(path)
+    local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
     local response = HttpService:RequestAsync({
         Url = url,
         Method = "GET"
@@ -54,19 +41,13 @@ end
 
 function fetchAllFiles(path)
     local files = {}
-    local data = fetchGitHubContents(path)
+    local data = fetchGitHubContents(path)  -- You still need to call this to get the file structure
 
     for _, item in pairs(data) do
         if item.type == "file" then
-            if item.content then
-                local content = Base64.decode(item.content)
-                files[item.path] = content
-            elseif item.download_url then
-                local content = fetchFileFromURL(item.download_url)
-                files[item.path] = content
-            else
-                error("No content or download URL found for file: " .. item.path)
-            end
+            -- Use the raw URL to fetch the content directly
+            local content = fetchFileFromRawURL(item.path)
+            files[item.path] = content
         elseif item.type == "dir" then
             local subFiles = fetchAllFiles(item.path)
             for subPath, content in pairs(subFiles) do
@@ -108,7 +89,12 @@ end
 
 function runMainScript()
     print(_G[_G.CLIENT_NAME])
-    loadstring(_G[_G.CLIENT_NAME]["Main.lua"].Value)
+    local mainScriptText = _G[_G.CLIENT_NAME]["Main.lua"]
+    if mainScriptText then
+        loadstring(mainScriptText)()  -- Ensure to call the loaded function
+    else
+        error("Main.lua not found in the loaded files")
+    end
 end
 
 function installPackage()
