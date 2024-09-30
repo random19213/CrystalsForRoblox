@@ -69,23 +69,26 @@ local function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent 
 
-
         local inQueue = true
+
         if string.match(textValue.Name, ".client.lua$") then
             inQueue = false
-            task.spawn(loadstring(textValue.Value))
+            task.spawn(loadstring(textValue.Value)) 
         end
 
         if parent.Name:match("-e$") then
             if inQueue then
+                print("Queuing script:", textValue.Name)
                 _G[_G.CLIENT_NAME.."queue"][textValue.Name] = textValue.Value
             end
         else
             inQueue = false
+            print("Loading script into active:", textValue.Name)
             _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
         end
     end
 end
+
 
 
 local function intiateMainScript()
