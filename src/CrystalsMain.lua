@@ -6,8 +6,10 @@ function MainModule.Initiate()
             local queuedScript = _G[_G.CLIENT_NAME.."queue"][name]
             if queuedScript then
                 local scriptFunction = loadstring(queuedScript)
-                _G[_G.CLIENT_NAME][name] = scriptFunction()
-                _G[_G.CLIENT_NAME.."queue"][name] = nil
+                if scriptFunction then
+                    _G[_G.CLIENT_NAME][name] = scriptFunction()
+                    _G[_G.CLIENT_NAME.."queue"][name] = nil
+                end
             else
                 error("Script '" .. name .. "' not found in both active and queue")
             end

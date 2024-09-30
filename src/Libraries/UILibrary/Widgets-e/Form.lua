@@ -17,10 +17,10 @@ function Form.new(formKey, options, context)
 	if self.Options.Child ~= nil then
 		self.Options.Child.Parent = element
 	end
-
+	
 	self:SetBaseGuiProperties(element)
 	self:SetBaseGuiEvents(element)
-	
+
 	return element
 end
 
