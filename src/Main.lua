@@ -1,20 +1,22 @@
-print("Requiring Modules")
+local MainModule = {}
 
-
-local s, e = pcall(function()
-    for name, content in _G[_G.CLIENT_NAME] do
-        if _G[_G.CLIENT_NAME][name] == _G[_G.CLIENT_NAME]["Main.lua"] then continue end
-        _G[_G.CLIENT_NAME][name] = loadstring(content)()
+function MainModule.Initiate()
+    local s, e = pcall(function()
+        for name, content in _G[_G.CLIENT_NAME] do
+            _G[_G.CLIENT_NAME][name] = loadstring(content)()
+        end
+    end)
+    
+    if s then
+        print("Successfully required all modules")
+    else
+        print("There was a problem requiring a module", e)
+        return
     end
-end)
-
-if s then
-    print("Successfully required all modules")
-else
-    print("There was a problem requiring a module", e)
-    return
+    
+    task.wait(5)
+    
+    _G[_G.CLIENT_NAME]["UILibrary.lua"].Instance("test instance")
 end
 
-task.wait(5)
-
-_G[_G.CLIENT_NAME]["UILibrary.lua"].Instance("test instance")
+return MainModule

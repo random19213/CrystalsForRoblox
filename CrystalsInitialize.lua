@@ -69,16 +69,20 @@ local function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent 
 
-        _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
+        if string.match(textValue.Name, ".client.lua$") then
+            task.spawn(loadstring(textValue.Value))
+        else
+            _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
+        end
     end
 end
 
 
-local function runMainScript()
+local function intiateMainScript()
     print(_G[_G.CLIENT_NAME])
     local mainScriptText = _G[_G.CLIENT_NAME]["Main.lua"]
     if mainScriptText then
-        loadstring(mainScriptText)() 
+        loadstring(mainScriptText)().Initiate() 
     else
         error("Main.lua not found in the loaded files")
     end
@@ -89,7 +93,7 @@ local function installPackage()
     if files then
         createTextFilesFromFiles(files)
         print("Package installed successfully!")
-        runMainScript()
+        intiateMainScript()
     else
         error("Failed to fetch package")
     end
