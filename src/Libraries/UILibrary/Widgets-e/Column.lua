@@ -1,4 +1,4 @@
-local Widget = _G._crystalRequire("Widget")
+local Widget = _G._crystalRequire("Widget.lua")
 
 local Column = {}
 Column.__index = Column
