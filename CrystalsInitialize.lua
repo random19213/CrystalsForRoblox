@@ -4,6 +4,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 
 _G[_G.CLIENT_NAME] = {}
+_G[_G.CLIENT_NAME.."queue"] = {} 
 
 local function fetchFileFromRawURL(path)
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
@@ -68,14 +69,20 @@ local function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent 
 
+
+        local inQueue = true
         if string.match(textValue.Name, ".client.lua$") then
+            inQueue = false
             task.spawn(loadstring(textValue.Value))
-        else
-            if parent.Name:match("-e$") then
-                _G[_G.CLIENT_NAME.."stopped"][textValue.Name] = textValue.Value
-            else
-                _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
+        end
+
+        if parent.Name:match("-e$") then
+            if inQueue then
+                _G[_G.CLIENT_NAME.."queue"][textValue.Name] = textValue.Value
             end
+        else
+            inQueue = false
+            _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
         end
     end
 end

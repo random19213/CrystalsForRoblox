@@ -4,7 +4,13 @@ function MainModule.Initiate()
     _G._crystalRequire = function (name)
         local found = _G[_G.CLIENT_NAME][name]
         if found == nil then
-            _G[_G.CLIENT_NAME][name] = loadstring(_G[_G.CLIENT_NAME.."stopped"][name])()
+            local queuedScript = _G[_G.CLIENT_NAME.."queue"][name]
+            if queuedScript then
+                _G[_G.CLIENT_NAME][name] = loadstring(queuedScript)()
+                _G[_G.CLIENT_NAME.."queue"][name] = nil
+            else
+                error("Script '" .. name .. "' not found in both active and queue")
+            end
         end
 
         return _G[_G.CLIENT_NAME][name]
@@ -26,11 +32,9 @@ function MainModule.Initiate()
     
     -- init
     for name, module in _G[_G.CLIENT_NAME] do
-        if module.Init == nil then
-            continue
+        if module.Init then
+            task.spawn(module.Init)
         end
-
-        task.spawn(module.Init)
     end
 
     -- done
