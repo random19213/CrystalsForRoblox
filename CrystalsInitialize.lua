@@ -67,7 +67,7 @@ local function createTextFilesFromFiles(files)
         local textValue = Instance.new("StringValue")
         textValue.Name = segments[#segments]
         textValue.Value = content
-        textValue.Parent = parent 
+        textValue.Parent = parent
 
         if textValue.Name == "Main.lua" then
             print("Main.lua content being loaded:", textValue.Value)
@@ -79,7 +79,7 @@ local function createTextFilesFromFiles(files)
             task.spawn(loadstring(textValue.Value)) 
         end
 
-        if parent.Name:match("-e$") then
+        if string.match(textValue.Parent.Name, "-e$") then
             if inQueue then
                 print("Queuing script:", textValue.Name)
                 _G[_G.CLIENT_NAME.."queue"][textValue.Name] = textValue.Value
