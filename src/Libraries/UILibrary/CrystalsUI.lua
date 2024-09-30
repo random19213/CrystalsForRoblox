@@ -1,14 +1,14 @@
---# Module for Random ID generation #--
-local SystemID = _G._crystalRequire("id.lua")
-
---# Module for rendering templates #--
-local Render = _G._crystalRequire("Render.lua")
-
 local CrystalsUI = {}
 CrystalsUI.__index = CrystalsUI
 
 function CrystalsUI.Init()
-		--# List of widgets with _G._crystalRequired module #--
+	--# List of widgets with _G._crystalRequired module #--
+	--# Module for Random ID generation #--
+	local SystemID = _G._crystalRequire("id.lua")
+
+	--# Module for rendering templates #--
+	local Render = _G._crystalRequire("Render.lua")
+
 	local Widgets = {
 		Container = _G._crystalRequire("Container.lua"),
 		TextButton = _G._crystalRequire("TextButton.lua"),
