@@ -69,8 +69,11 @@ local function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent 
 
-        local inQueue = true
+        if textValue.Name == "Main.lua" then
+            print("Main.lua content being loaded:", textValue.Value)
+        end
 
+        local inQueue = true
         if string.match(textValue.Name, ".client.lua$") then
             inQueue = false
             task.spawn(loadstring(textValue.Value)) 
