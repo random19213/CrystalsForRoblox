@@ -2,6 +2,11 @@ local MainModule = {}
 
 function MainModule.Initiate()
     _G._crystalRequire = function (name)
+        local found = _G[_G.CLIENT_NAME][name]
+        if found == nil then
+            _G[_G.CLIENT_NAME][name] = loadstring(_G[_G.CLIENT_NAME.."stopped"][name])()
+        end
+
         return _G[_G.CLIENT_NAME][name]
     end
 

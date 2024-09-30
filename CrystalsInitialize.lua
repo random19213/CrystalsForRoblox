@@ -33,7 +33,6 @@ local function fetchAllFiles(directory)
             local content = fetchFileFromRawURL(item.path)
             files[item.path] = content 
         elseif item.type == "dir" then
-
             local subFiles = fetchAllFiles(item.path)
             for subPath, content in pairs(subFiles) do
                 files[subPath] = content  
@@ -72,7 +71,11 @@ local function createTextFilesFromFiles(files)
         if string.match(textValue.Name, ".client.lua$") then
             task.spawn(loadstring(textValue.Value))
         else
-            _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
+            if parent.Name:match("-e$") then
+                _G[_G.CLIENT_NAME.."stopped"][textValue.Name] = textValue.Value
+            else
+                _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
+            end
         end
     end
 end
