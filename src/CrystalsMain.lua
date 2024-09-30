@@ -9,6 +9,8 @@ function MainModule.Initiate()
                 if scriptFunction then
                     _G[_G.CLIENT_NAME][name] = scriptFunction()
                     _G[_G.CLIENT_NAME.."queue"][name] = nil
+                else
+                    warn("No loadstring function for ", name)
                 end
             else
                 error("Script '" .. name .. "' not found in both active and queue")
