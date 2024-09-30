@@ -95,9 +95,11 @@ end
 
 
 local function intiateMainScript()
-    print(_G[_G.CLIENT_NAME])
-    local mainScriptText = _G[_G.CLIENT_NAME]["Main.lua"]
+    print("Attempting to load Main.lua from:", _G[_G.CLIENT_NAME])
+    local mainScriptText = _G[_G.CLIENT_NAME]["CrystalsMain.lua"]
+    
     if mainScriptText then
+        print("Main.lua found, running...")
         loadstring(mainScriptText)().Initiate() 
     else
         error("Main.lua not found in the loaded files")
