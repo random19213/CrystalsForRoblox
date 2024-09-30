@@ -96,6 +96,11 @@ end
 
 local function intiateMainScript()
     print("Attempting to load Main.lua from:", _G[_G.CLIENT_NAME])
+
+    for name, content in _G[_G.CLIENT_NAME] do
+        print(name)
+    end
+
     local mainScriptText = _G[_G.CLIENT_NAME]["CrystalsMain.lua"]
     
     if mainScriptText then
