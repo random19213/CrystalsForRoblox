@@ -1,6 +1,6 @@
 local Widget = _G._crystalRequire("Widget.lua")
 local Theme = _G._crystalRequire("DefaultTheme.lua")
-local FormKeyModel = _G._crystalRequire("FormKey.lua)
+local FormKeyModel = _G._crystalRequire("FormKey.lua")
 
 local Form = {}
 Form.__index = Form
