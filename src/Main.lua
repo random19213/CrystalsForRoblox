@@ -12,7 +12,7 @@ function MainModule.Initiate()
                 error("Script '" .. name .. "' not found in both active and queue")
             end
         end
-        
+
         return _G[_G.CLIENT_NAME][name]
     end
 
@@ -37,7 +37,7 @@ function MainModule.Initiate()
     
     -- init
     for name, module in _G[_G.CLIENT_NAME] do
-        if module.Init then
+        if type(module) == "table" and module.Init then
             task.spawn(module.Init)
         end
     end
