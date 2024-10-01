@@ -28,8 +28,9 @@ function MainModule.Initiate()
         return _G[_G.CLIENT_NAME][name]
     end
 
-    local uiFramework = _G._crystalRequire("CrystalsUI.lua")
     local InitializeLabelComponent = _G._crystalRequire("InitializeLabel.lua")
+    local uiFramework = _G._crystalRequire("CrystalsUI.lua")
+    
     local e = uiFramework.new()
     e:RunApp {
         Name = "Crystals4Bedwars",
