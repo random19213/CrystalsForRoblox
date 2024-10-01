@@ -11,17 +11,18 @@ function MainModule.Initiate()
                 if scriptFunction then
                     _G[_G.CLIENT_NAME][name] = scriptFunction()
                     _G[_G.CLIENT_NAME.."queue"][name] = nil
-                    if StartedInitializing == false then
-                        LoadedFirst[name] = true
-                    else
-                        LoadedFirst[name] = nil
-                    end
                 else
                     warn("No loadstring function for ", name)
                 end
             else
                 error("Script '" .. name .. "' not found in both active and queue")
             end
+        end
+
+        if StartedInitializing == false then
+            LoadedFirst[name] = true
+        else
+            LoadedFirst[name] = nil
         end
 
         return _G[_G.CLIENT_NAME][name]
@@ -45,7 +46,9 @@ function MainModule.Initiate()
             if type(content) == "string" and LoadedFirst[name] == nil then
                 _G[_G.CLIENT_NAME][name] = loadstring(content)()
             else
-                print("Error: Expected string, got", type(content), "for script", name)
+                if LoadedFirst[name] == nil then
+                    print("Error: Expected string, got", type(content), "for script", name)
+                end
             end
         end
     end)
