@@ -2,7 +2,7 @@ local Widget = {}
 Widget.__index = Widget
 
 --# Module for Random ID generation #--
-local SystemID = _G._crystalRequire("id.lua")
+local SystemID = require(script.Parent.Parent.Modules.id)
 
 --- Creates a new custom widget.
 ---@param options any
@@ -266,6 +266,17 @@ function Widget:SetBaseGuiProperties(element)
 	self:DoWithOptionsOrTheme(options, Theme, "UICorner", function(obj)
 		local corner = Instance.new("UICorner", element)
 		corner.CornerRadius = obj.UICorner.CornerRadius or UDim.new(0, 8)
+	end)
+	
+	self:DoWithOptionsOrTheme(options, Theme, "UIStroke", function(obj)
+		local stroke = Instance.new("UIStroke", element)
+		local definedStroke = obj.UIStroke
+		
+		stroke.ApplyStrokeMode = definedStroke.ApplyStrokeMode or Enum.ApplyStrokeMode.Contextual
+		stroke.Color = definedStroke.Color or Color3.fromRGB(0,0,0)
+		stroke.LineJoinMode = definedStroke.LineJoinMode or Enum.LineJoinMode.Round
+		stroke.Thickness = definedStroke.Thickness or 1
+		stroke.Transparency = definedStroke.Transparency or 0
 	end)
 end
 

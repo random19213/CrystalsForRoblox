@@ -28,15 +28,13 @@ function MainModule.Initiate()
         return _G[_G.CLIENT_NAME][name]
     end
 
-    print(StartedInitializing)
     local uiFramework = _G._crystalRequire("CrystalsUI.lua")
+    local InitializeLabelComponent = _G._crystalRequire("InitializeLabel.lua")
     local e = uiFramework.new()
     e:RunApp {
         Name = "Crystals4Bedwars",
-	    Home = e.TextLabel("Hello world"),
+	    Home = InitializeLabelComponent:Build(),
     }
-
-    print(StartedInitializing)
 
     -- require
     StartedInitializing = true
@@ -52,8 +50,6 @@ function MainModule.Initiate()
             end
         end
     end)
-
-    print(StartedInitializing)
     
     if s then
         print("Successfully required all modules")
