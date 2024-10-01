@@ -1,4 +1,6 @@
 local MainModule = {}
+local LoadedFirst = {}
+local StartedInitializing = false
 
 function MainModule.Initiate()
     _G._crystalRequire = function(name)
@@ -17,6 +19,10 @@ function MainModule.Initiate()
             end
         end
 
+        if StartedInitializing == false then
+           LoadedFirst[name] = true             
+        end
+
         return _G[_G.CLIENT_NAME][name]
     end
 
@@ -28,10 +34,11 @@ function MainModule.Initiate()
     }
 
     -- require
+    StartedInitializing = true
     local s, e = pcall(function()
         for name, content in pairs(_G[_G.CLIENT_NAME]) do
             print("Loading script:", name, "Type:", type(content))
-            if type(content) == "string" then
+            if type(content) == "string" and LoadedFirst[name] == nil then
                 _G[_G.CLIENT_NAME][name] = loadstring(content)()
             else
                 print("Error: Expected string, got", type(content), "for script", name)
