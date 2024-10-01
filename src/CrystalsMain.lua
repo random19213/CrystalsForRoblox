@@ -11,6 +11,11 @@ function MainModule.Initiate()
                 if scriptFunction then
                     _G[_G.CLIENT_NAME][name] = scriptFunction()
                     _G[_G.CLIENT_NAME.."queue"][name] = nil
+                    if StartedInitializing == false then
+                        LoadedFirst[name] = true
+                    else
+                        LoadedFirst[name] = nil
+                    end
                 else
                     warn("No loadstring function for ", name)
                 end
@@ -19,19 +24,18 @@ function MainModule.Initiate()
             end
         end
 
-        if StartedInitializing == false then
-           LoadedFirst[name] = true             
-        end
-
         return _G[_G.CLIENT_NAME][name]
     end
 
+    print(StartedInitializing)
     local uiFramework = _G._crystalRequire("CrystalsUI.lua")
     local e = uiFramework.new()
     e:RunApp {
         Name = "Crystals4Bedwars",
 	    Home = e.TextLabel("Hello world"),
     }
+
+    print(StartedInitializing)
 
     -- require
     StartedInitializing = true
@@ -45,6 +49,8 @@ function MainModule.Initiate()
             end
         end
     end)
+
+    print(StartedInitializing)
     
     if s then
         print("Successfully required all modules")
