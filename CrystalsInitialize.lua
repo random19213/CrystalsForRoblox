@@ -132,7 +132,8 @@ local function installPackage()
     initLabel.BackgroundTransparency = 1
     initLabel.TextColor3 = Color3.fromRGB(255,255, 255)
     initLabel.TextScaled = true
-    initLabel.Text = `Fetching `.._G.CLIENT_NAME..` Package`
+    initLabel.Text = "Fetching ".._G.CLIENT_NAME.." Package"
+
     _G._initLabel = initLabel
 
     local files = fetchAllFiles("src")
