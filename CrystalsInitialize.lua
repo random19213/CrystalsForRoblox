@@ -43,6 +43,11 @@ local function fetchAllFiles(directory)
         if item.type == "file" then
             local content = fetchFileFromRawURL(item.path)
             files[item.path] = content 
+
+            local args = item.path:split("/")
+            local name = args[#args]
+
+            _G._initLabel.Text = "Fetching: "..name
         elseif item.type == "dir" then
             local subFiles = fetchAllFiles(item.path)
             for subPath, content in pairs(subFiles) do
@@ -127,7 +132,7 @@ local function installPackage()
     initLabel.BackgroundTransparency = 1
     initLabel.TextColor3 = Color3.fromRGB(255,255, 255)
     initLabel.TextScaled = true
-    initLabel.Name = `Fetching `.._G.CLIENT_NAME..` Package`
+    initLabel.Text = `Fetching `.._G.CLIENT_NAME..` Package`
     _G._initLabel = initLabel
 
     local files = fetchAllFiles("src")
@@ -137,8 +142,8 @@ local function installPackage()
         _G._initLabel.Text = "Package installed successfully!"
         intiateMainScript()
     else
-        error("Failed to fetch package")
          _G._initLabel.Text = "Failed to fetch package"
+        error("Failed to fetch package")
     end
 end
 
