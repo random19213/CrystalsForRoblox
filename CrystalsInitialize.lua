@@ -2,7 +2,9 @@ _G.CLIENT_NAME = "Crystals4Bedwars"
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local Players = game:GetService("Players")
 
+local player = Players.LocalPlayer
 _G[_G.CLIENT_NAME] = {}
 _G[_G.CLIENT_NAME.."queue"] = {} 
 
@@ -13,6 +15,10 @@ local function fetchFileFromRawURL(path)
     if s then
         return r
     else
+        _G._initLabel.Text = "Failed to fetch file from URL: " .. r
+        task.delay(3, function ()
+            _G._initLabel.Parent:Destroy()
+        end)
         error("Failed to fetch file from URL: " .. r)
     end
 end
@@ -24,6 +30,10 @@ local function fetchAllFiles(directory)
     local s, r = pcall(game.HttpGet, game, url)
 
     if not s then
+        _G._initLabel.Text = "Failed to fetch directory contents: " .. r
+        task.delay(3, function ()
+            _G._initLabel.Parent:Destroy()
+        end)
         error("Failed to fetch directory contents: " .. r)
     end
 
@@ -69,10 +79,6 @@ local function createTextFilesFromFiles(files)
         textValue.Value = content
         textValue.Parent = parent
 
-        if textValue.Name == "Main.lua" then
-            print("Main.lua content being loaded:", textValue.Value)
-        end
-
         local inQueue = true
         if string.match(textValue.Name, ".client.lua$") then
             inQueue = false
@@ -82,11 +88,13 @@ local function createTextFilesFromFiles(files)
         if string.match(textValue.Parent.Name, "-e$") then
             if inQueue then
                 print("Queuing script:", textValue.Name)
+                _G._initLabel.Text = "Queuing script: "..textValue.Name
                 _G[_G.CLIENT_NAME.."queue"][textValue.Name] = textValue.Value
             end
         else
             inQueue = false
             print("Loading script into active:", textValue.Name)
+            _G._initLabel.Text = "Loading script into active: "..textValue.Name
             _G[_G.CLIENT_NAME][textValue.Name] = textValue.Value
         end
     end
@@ -107,13 +115,30 @@ local function intiateMainScript()
 end
 
 local function installPackage()
+    
+    local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+    gui.DisplayOrder = 999
+    gui.IgnoreGuiInset = true
+
+    local initLabel = Instance.new("TextLabel", gui)
+    initLabel.Size = UDim2.fromScale(1, 0.2)
+    initLabel.AnchorPoint = Vector2.new(0.5, 0)
+    initLabel.Position = UDim2.fromScale(0.5, 0)
+    initLabel.BackgroundTransparency = 1
+    initLabel.TextColor3 = Color3.fromRGB(255,255, 255)
+    initLabel.TextScaled = true
+    initLabel.Name = `Fetching `.._G.CLIENT_NAME..` Package`
+    _G._initLabel = initLabel
+
     local files = fetchAllFiles("src")
     if files then
         createTextFilesFromFiles(files)
         print("Package installed successfully!")
+        _G._initLabel.Text = "Package installed successfully!"
         intiateMainScript()
     else
         error("Failed to fetch package")
+         _G._initLabel.Text = "Failed to fetch package"
     end
 end
 
