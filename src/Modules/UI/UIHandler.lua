@@ -1,7 +1,7 @@
 local UIHandler = {}
 
 function UIHandler.Init()
-    task.defer(function ()
+    task.delay(5, function()
         local uiFramework = _G._crystalRequire("CrystalsUI.lua")
         local app = uiFramework.new()
         app:RunApp {
