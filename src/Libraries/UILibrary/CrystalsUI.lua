@@ -1,7 +1,7 @@
 local CrystalsUI = {}
 CrystalsUI.__index = CrystalsUI
 
---function CrystalsUI.Init()
+function CrystalsUI.Init()
 	--# List of widgets with _G._crystalRequired module #--
 	--# Module for Random ID generation #--
 	local SystemID = _G._crystalRequire("id.lua")
@@ -150,6 +150,6 @@ CrystalsUI.__index = CrystalsUI
 
 		return nil
 	end
---end
+end
 
 return CrystalsUI
