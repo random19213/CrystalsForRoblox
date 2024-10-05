@@ -1,6 +1,7 @@
 local UIHandler = {}
 
 function UIHandler.Init()
+    print("ran")
     local uiFramework = _G._crystalRequire("CrystalsUI.lua")
     local app = uiFramework.new()
     app:RunApp {
