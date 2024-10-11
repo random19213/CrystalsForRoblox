@@ -79,8 +79,16 @@ local function createTextFilesFromFiles(files)
             end
             parent = folder 
         end
-        
-        table.insert(_G._crmodules, 1, {Name = segments[#segments], Source = content})
+
+        local name = segments[#segments]
+
+        if name:match(".client.lua$") then
+            task.spawn(function()
+                loadstring(source)()
+            end)
+        else
+            table.insert(_G._crmodules, 1, {Name = name, Source = content})
+        end
     end
 end
 
