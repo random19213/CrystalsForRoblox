@@ -80,7 +80,11 @@ local function createTextFilesFromFiles(files)
         end
 
         local name = segments[#segments]
-
+        local textValue = Instance.new("StringValue")
+        textValue.Value = content
+        textValue.Name = name
+        textValue.Parent = parent
+       
         local _script = {Name = name, Source = content}
         table.insert(CrModules, 1, _script)
     end
