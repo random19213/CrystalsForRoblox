@@ -8,6 +8,7 @@ local player = Players.LocalPlayer
 -- _G[_G.CLIENT_NAME] = {}
 -- _G[_G.CLIENT_NAME.."queue"] = {} 
 _G._crmodules = {}
+local MainScript = nil
 
 local function fetchFileFromRawURL(path)
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
@@ -82,12 +83,11 @@ local function createTextFilesFromFiles(files)
 
         local name = segments[#segments]
 
-        if name:match(".client.lua$") then
-            task.spawn(function()
-                loadstring(source)()
-            end)
+        local script = {Name = name, Source = content}
+        if name == "CrystalsMain.client.lua" then
+            MainScript = script
         else
-            table.insert(_G._crmodules, 1, {Name = name, Source = content})
+            table.insert(_G._crmodules, 1, script)
         end
     end
 end
@@ -95,12 +95,9 @@ end
 
 
 local function intiateMainScript()
-    print("Attempting to load Main.lua from:", _G[_G.CLIENT_NAME])
-    local mainScriptText = _G[_G.CLIENT_NAME]["CrystalsMain.lua"]
-    
-    if mainScriptText then
+    if MainScript then
         print("Main.lua found, running...")
-        loadstring(mainScriptText)().Initiate() 
+        loadstring(MainScript.Source)().Initiate() 
     else
         error("Main.lua not found in the loaded files")
     end
