@@ -11,7 +11,7 @@ function UIHandler.Init()
     _G._crystalTree.MainFrame = CrystalsUI.Element("Frame", {
         Size = Udim2.fromScale(1,1),
         Position = Udim2.fromScale(0.5,0.5),
-        AnchorPoint = Vector2.new(0.5, 0.5)
+        AnchorPoint = Vector2.new(0.5, 0.5),
 
         BackgroundTransparency = 0.5
     })
