@@ -64,7 +64,7 @@ local function createTextFilesFromFiles(files)
     parentFolder.Name = _G.CLIENT_NAME
     parentFolder.Parent = ReplicatedFirst
 
-    for path, content in pairs(files) do
+    for path, content in files do
         local segments = path:split("/")
         local parent = parentFolder
 
