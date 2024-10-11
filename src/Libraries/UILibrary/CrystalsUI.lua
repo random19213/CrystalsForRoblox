@@ -1,155 +1,222 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local _table = {}
+local _trees = {}
+
+local TreeClass = {}
+TreeClass.__index = TreeClass
+
+function TreeClass.new(name)
+	local self = setmetatable({}, TreeClass)
+	self._gui = Instance.new("ScreenGui")
+	self._gui.Name = name
+	self._gui.Parent = player:WaitForChild("PlayerGui")
+	self._elements = {}
+	return self
+end
+
 local CrystalsUI = {}
-CrystalsUI.__index = CrystalsUI
 
---function CrystalsUI.Init()
-	--# List of widgets with _G._crystalRequired module #--
-	--# Module for Random ID generation #--
-	local SystemID = _G._crystalRequire("id.lua")
+function CrystalsUI.CreateTree(Name: string, behaviour)
+	if _trees[Name] then
+		for prop, value in behaviour do
+			_trees[Name]._gui[prop] = value
+		end
+		
+		return _trees[Name]
+	end
+	
+	local Tree = TreeClass.new(Name)
 
-	--# Module for rendering templates #--
-	local Render = _G._crystalRequire("Render.lua")
+	local self = setmetatable({}, {
+		__newindex = function(_, key, value)
+			if typeof(value) == "Instance" then
+				local wrappedElement = CrystalsUI._element(value, Tree)
+				Tree._elements[key] = wrappedElement
+				value.Parent = Tree._gui
+			elseif typeof(value) == "string" and pcall(function() Instance.new(value) end) then
+				local newElement = Instance.new(value)
+				newElement.Parent = Tree._gui
+				Tree._elements[key] = CrystalsUI._element(newElement, Tree)
+			elseif typeof(value) == "table" and value._isElement == true then
+				value._instance.Parent = Tree._gui
+				Tree._elements[key] = value
+			else
+				error(("Invalid element type provided for key '%s'. Expected an Instance or valid class string. Got: %s"):format(key, tostring(value)))
+			end
+		end,
+		__index = function(_, key)
+			return Tree._elements[key]
+		end
+	})
+	
+	for prop, value in behaviour do
+		Tree._gui[prop] = value
+	end
+	
+	_trees[Name] = Tree
 
-	local Widgets = {
-		Container = _G._crystalRequire("Container.lua"),
-		TextButton = _G._crystalRequire("TextButton.lua"),
-		TextLabel = _G._crystalRequire("TextLabel.lua"),
-		Column = _G._crystalRequire("Column.lua"),
-		Form = _G._crystalRequire("Form.lua"),
-		TextFormField = _G._crystalRequire("TextFormField.lua"),
-		GridBuilder = _G._crystalRequire("GridBuilder.lua"),
-		ImageButton = _G._crystalRequire("ImageButton.lua"),
-		ImageLabel = _G._crystalRequire("ImageLabel.lua"),
-		ListBuilder = _G._crystalRequire("ListBuilder.lua"),
-		Row = _G._crystalRequire("Row.lua"),
-		ScrollContainer = _G._crystalRequire("ScrollContainer.lua"),
-		TextBox = _G._crystalRequire("TextBox.lua"),
-		Stack = _G._crystalRequire("Stack.lua"),
-		PageLayout = _G._crystalRequire("PageLayout.lua"),
-		VerticalSpacer = _G._crystalRequire("VerticalSpacer.lua"),
-		HorizontalSpacer = _G._crystalRequire("HorizontalSpacer.lua"),
-		Viewport = _G._crystalRequire("Viewport.lua"),
-		Observer = _G._crystalRequire("Observer.lua")
+	return self, Tree
+end
+
+function CrystalsUI.Element(class, properties)
+	local newElement = Instance.new(class)
+
+	properties = properties or {}
+
+	for prop, value in pairs(properties) do
+		newElement[prop] = value
+	end
+
+	local element = CrystalsUI._element(newElement, nil)
+	element:AddState("InitState", function(instance, self, blacklist)
+		for prop, value in (properties) do
+			if blacklist[prop] == true then
+				continue
+			end
+			instance[prop] = value
+		end
+	end)
+
+	return element
+end
+
+function CrystalsUI.StateParams(whitelist: boolean, props: {[string] : any})
+	return {
+		_stateParams = true,
+		_whitelist = whitelist or false,
+		_properties = props,
 	}
+end
 
-	--- CrystalsUI constructor
-	function CrystalsUI.new()
-		local self = {}
-		setmetatable(self, CrystalsUI)
+local elementCache = {}
 
-		--# Context dictionnary creation #--
-		
-		self.Context = {}
-		self.Context.Widgets = {}
-		self.Context.Player = game.Players.LocalPlayer
-		self.Context.DefaultTheme = _G._crystalRequire("DefaultTheme.lua")
-		self.Context.Injections = {}
-		self.Context.Uses = {}
-		self.Context.TemplatesFolder = nil
-
-		--# Components constructor #--
-
-		function CrystalsUI.Container(options) return Widgets["Container"].new(options, self.Context) end
-		function CrystalsUI.TextButton(text, options) return Widgets["TextButton"].new(text, options, self.Context) end
-		function CrystalsUI.TextLabel(text, options) return Widgets["TextLabel"].new(text, options, self.Context) end
-		function CrystalsUI.Column(options) return Widgets["Column"].new(options, self.Context) end
-		function CrystalsUI.Form(formKey, options) return Widgets["Form"].new(formKey, options, self.Context) end
-		function CrystalsUI.TextFormField(formKey, options) return Widgets["TextFormField"].new(formKey, options, self.Context) end
-		function CrystalsUI.GridBuilder(itemCount, builder, options) return Widgets["GridBuilder"].new(itemCount, builder, options, self.Context) end
-		function CrystalsUI.ImageButton(image, options) return Widgets["ImageButton"].new(image, options, self.Context) end
-		function CrystalsUI.ImageLabel(image, options) return Widgets["ImageLabel"].new(image, options, self.Context) end
-		function CrystalsUI.ListBuilder(itemCount, builder, options) return Widgets["ListBuilder"].new(itemCount, builder, options, self.Context) end
-		function CrystalsUI.Row(options) return Widgets["Row"].new(options, self.Context) end
-		function CrystalsUI.ScrollContainer(options) return Widgets["ScrollContainer"].new(options, self.Context) end
-		function CrystalsUI.TextBox(options) return Widgets["TextBox"].new(options, self.Context) end
-		function CrystalsUI.Stack(options) return Widgets["Stack"].new(options, self.Context) end
-		function CrystalsUI.PageLayout(options) return Widgets["PageLayout"].new(options, self.Context) end
-		function CrystalsUI.VerticalSpacer(size, options) return Widgets["VerticalSpacer"].new(size, options, self.Context) end
-		function CrystalsUI.HorizontalSpacer(size, options) return Widgets["HorizontalSpacer"].new(size, options, self.Context) end
-		function CrystalsUI.Viewport(options) return Widgets["Viewport"].new(options, self.Context) end
-		function CrystalsUI.Render(templateName, builder) return Render(templateName, self.TemplatesFolder, builder) end
-		function CrystalsUI.Observer(store, actions, widgetTree) return Widgets["Observer"].new(store, widgetTree, actions, self):Build() end
-		
-		return self
+function CrystalsUI._element(inst, tree)
+	if typeof(inst) ~= "Instance" then
+		error("Invalid element type provided. Expected an Instance.")
 	end
 
-	function CrystalsUI:Use(obj)
-		obj.Context = self.Context
-		self.Context.Uses[obj.Name] = obj
-		return self
+	if elementCache[inst] then
+		return elementCache[inst]
 	end
 
-	function CrystalsUI:SetTemplatesFolder(folder)
-		self.TemplatesFolder = folder
-	end
+	local states = {}
+	local events = {}
 
-	--- Creates a ScreenGui with the provided options.
-	---@param options any
-	function CrystalsUI:RunApp(options)
-		local context = self.Context
-		local player = game.Players.LocalPlayer
-		local output = options.Output or player.PlayerGui
-		local name = options.Name or "CrystalsUIApp"
+	local newElement = setmetatable({
+		_instance = inst,
+		_states = states,
+		_events = events, 
+		_isElement = true,
+		_tree = tree,
 		
-		if context.Theme == nil then
-			context.Theme = {}
-		end
-		
-		-- If there's a sussy imposter DESTROY HIM
-		if output:FindFirstChild(name) then
-			output:FindFirstChild(name):Destroy()
-		end
-		
-		local screenGui = Instance.new(options.GUIType or "ScreenGui", output)
-		screenGui.ResetOnSpawn = false
-		screenGui.Name = name
-		screenGui:SetAttribute("CrystalsUIId", SystemID.randomString(12))
-		context.GUI = screenGui
-		
-		if options.Face then
-			screenGui.Face = options.Face
-		end
-		
-		-- Put the Home widget provided in the ScreenGui
-		if options.Home then
-			options.Home.Parent = screenGui
-			context.RunApp = CrystalsUI.RunApp
-		else
-			error("App does not have any home widget!")
-		end
-	end
+		ChangeState = function(self, stateName, blacklist : {}?)
+			blacklist = blacklist or {}
+			print("Changing state to:", stateName)
+			local state = self._states[stateName]
+			if state then
+				task.spawn(state, self._instance, self, blacklist)
+			else
+				warn("No state found for:", stateName)
+			end
+			return self
+		end,
 
-	--- Get an element in the current ScreenGui by it's name.
-	--- Not the best practice, but it's here if you have no other choices.
-	---@param name string
-	function CrystalsUI:GetElementByName(name, context)
-		if context == nil then
-			context = self.Context
-		end
-		local descendants = context.GUI:GetDescendants()
-		
-		for index, descendant in pairs(descendants) do
-			if descendant.Name == name then
-				return descendant
+		AddState = function(self, stateName, stateFunc)
+			self._states[stateName] = stateFunc
+			return self
+		end,
+
+		Connect = function(self, eventName, callback)
+			if not self._events[eventName] then
+				self._events[eventName] = {}
+			end
+			table.insert(self._events[eventName], callback)
+
+			if eventName == "hover:enter" and inst:IsA("GuiObject") then
+				inst.MouseEnter:Connect(function()
+					self:Trigger("hover:enter")
+				end)
+			elseif eventName == "hover:exit" and inst:IsA("GuiObject") then
+				inst.MouseLeave:Connect(function()
+					self:Trigger("hover:exit")
+				end)
+			elseif eventName == "mouse:down" and inst:IsA("GuiButton") then
+				inst.MouseButton1Down:Connect(function()
+					self:Trigger("mouse:down")
+				end)
+			elseif eventName == "mouse:up" and inst:IsA("GuiButton") then
+				inst.MouseButton1Up:Connect(function()
+					self:Trigger("mouse:up")
+				end)
+			elseif eventName == "clicked" and inst:IsA("GuiButton") then
+				inst.MouseButton1Click:Connect(function()
+					self:Trigger("clicked")
+				end)
+			end
+
+			return self
+		end,
+
+		Trigger = function(self, eventName, ...)
+			if self._events[eventName] then
+				for _, callback in pairs(self._events[eventName]) do
+					task.spawn(callback, self._instance, self, ...)
+				end
 			end
 		end
-		
-		return nil
-	end
+	}, {
+		__newindex = function(self, key, value)
+			if key == "_tree" then return end
+			if self._isElement then
+				if typeof(value) == "Instance" then
+					value.Parent = self._instance
+					local element = CrystalsUI._element(value, self._tree)
+					if self._tree then
+						self._tree._elements[key] = element
+					end
+				elseif typeof(value) == "table" and value._isElement == true then
+					value._tree = self._tree
+					value._instance.Parent = self._instance
+					if self._tree then
+						self._tree._elements[key] = value
+					end
+				elseif self._instance[key] ~= nil then
+					self._instance[key] = value
+				end
+			else
+				error("Attempt to modify a non-element instance.")
+			end
+		end,
 
-	--- Get an element in the current ScreenGui by it's CrystalsUIId.
-	--- Not the best practice, but it's here if you have no other choices.
-	---@param id string
-	function CrystalsUI:GetElementById(id)
-		local descendants = self.Context.GUI:GetDescendants()
-
-		for index, descendant in pairs(descendants) do
-			if descendant:GetAttribute("CrystalsUIId") == id then
-				return descendant
+		__index = function(self, key)
+			if key == "_tree" then return end
+			local child = self._instance:FindFirstChild(key)
+			if child then
+				return CrystalsUI._element(child, self._tree)
+			elseif typeof(self._instance[key]) == "function" then
+				return function(_, ...)
+					return self._instance[key](self._instance, ...)
+				end
+			elseif self._instance[key] ~= nil then
+				return self._instance[key]
 			end
 		end
+	})
 
-		return nil
+	elementCache[inst] = newElement
+
+	return newElement
+end
+
+
+function _table.keys(t)
+	local keys = {}
+	for k in pairs(t) do
+		table.insert(keys, k)
 	end
---end
+	return keys
+end
 
 return CrystalsUI
