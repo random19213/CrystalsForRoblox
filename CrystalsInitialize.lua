@@ -120,7 +120,7 @@ local function installPackage()
     
             _G._initLabel.Text = "Requiring: "..name
             RequiredModules[name] = loadstring(source)()
-            _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
+            _G._initLabel.Text = "Successfully Required: "..name
         end
     
         -- init
