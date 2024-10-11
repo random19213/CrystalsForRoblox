@@ -11,12 +11,10 @@ function MainModule.Initiate()
         local name = NameSource.Name
         local source = NameSource.Source
 
-        task.spawn(function()
-            _G._initLabel.Text = "Requiring: "..name
-            local result = loadstring(source)()
-            RequiredModules[name] = result
-            _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
-        end)
+        _G._initLabel.Text = "Requiring: "..name
+        local result = loadstring(source)()
+        RequiredModules[name] = result
+        _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
     end
     
     repeat
