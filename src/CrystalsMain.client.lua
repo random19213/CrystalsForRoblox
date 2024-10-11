@@ -7,13 +7,12 @@ function MainModule.Initiate()
     end
 
     -- require
-    for i, NameSource in ipairs(_G._crmodules) do
+    for i, NameSource in (_G._crmodules) do
         local name = NameSource.Name
         local source = NameSource.Source
 
         _G._initLabel.Text = "Requiring: "..name
-        local result = loadstring(source)()
-        RequiredModules[name] = result
+        RequiredModules[name] = loadstring(source)()
         _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
     end
 
