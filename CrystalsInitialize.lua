@@ -83,23 +83,8 @@ local function createTextFilesFromFiles(files)
 
         local name = segments[#segments]
 
-        local script = {Name = name, Source = content}
-        if name == "CrystalsMain.client.lua" then
-            MainScript = script
-        else
-            table.insert(_G._crmodules, 1, script)
-        end
-    end
-end
-
-
-
-local function intiateMainScript()
-    if MainScript then
-        print("Main.lua found, running...")
-        loadstring(MainScript.Source)().Initiate() 
-    else
-        error("Main.lua not found in the loaded files")
+        local _script = {Name = name, Source = content}
+        table.insert(_G._crmodules, 1, _script)
     end
 end
 
@@ -125,7 +110,38 @@ local function installPackage()
         createTextFilesFromFiles(files)
         print("Package installed successfully!")
         _G._initLabel.Text = "Package installed successfully!"
-        intiateMainScript()
+
+        _G._crystalRequire = function(name)
+            return RequiredModules[name]
+        end
+    
+        -- require
+        for i, NameSource in (_G._crmodules) do
+            local name = NameSource.Name
+            local source = NameSource.Source
+    
+            _G._initLabel.Text = "Requiring: "..name
+            RequiredModules[name] = loadstring(source)()
+            _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
+        end
+    
+        -- init
+        for name, module in RequiredModules do
+            if type(module) == "table" and module.Init then
+                _G._initLabel.Text = "Initializing: "..name
+                module:Init()
+            end
+        end
+    
+        -- start
+        for name, module in RequiredModules do
+            if type(module) == "table" and module.Start then
+                _G._initLabel.Text = "Starting: "..name
+                module:Start()
+            end
+        end
+    
+        _G._initLabel.Parent:Destroy()
     else
          _G._initLabel.Text = "Failed to fetch package"
         error("Failed to fetch package")
