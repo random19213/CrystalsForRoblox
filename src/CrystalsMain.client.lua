@@ -16,10 +16,6 @@ function MainModule.Initiate()
         RequiredModules[name] = result
         _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
     end
-    
-    repeat
-        task.wait()
-    until #RequiredModules == #_G._crmodules
 
     -- init
     for name, module in RequiredModules do
