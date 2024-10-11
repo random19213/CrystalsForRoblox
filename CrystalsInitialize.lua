@@ -5,10 +5,8 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
--- _G[_G.CLIENT_NAME] = {}
--- _G[_G.CLIENT_NAME.."queue"] = {} 
 _G._crmodules = {}
-local MainScript = nil
+local RequiredModules = {}
 
 local function fetchFileFromRawURL(path)
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
