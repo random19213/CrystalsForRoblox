@@ -15,7 +15,7 @@ function MainModule.Initiate()
             _G._initLabel.Text = "Requiring: "..name
             local result = loadstring(source)()
             RequiredModules[name] = result
-            _G._initLabel.Text = "Successfully Required: "..name
+            _G._initLabel.Text = "Successfully Required: "..name .. " "..#RequiredModules.."/"..#_G._crmodules
         end)
     end
     

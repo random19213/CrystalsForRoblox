@@ -1,6 +1,6 @@
 local UIHandler = {}
 
-function UIHandler.Init()
+function UIHandler:Start()
     local CrystalsUI = _G._crystalRequire("CrystalsUI.lua")
     _G._crystalTree = CrystalsUI.CreateTree("Crystals4Bedwars", {
         Enabled = true,
