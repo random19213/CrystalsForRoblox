@@ -5,7 +5,7 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
-_G._crmodules = {}
+local CrModules = {}
 local RequiredModules = {}
 
 local function fetchFileFromRawURL(path)
@@ -82,7 +82,7 @@ local function createTextFilesFromFiles(files)
         local name = segments[#segments]
 
         local _script = {Name = name, Source = content}
-        table.insert(_G._crmodules, 1, _script)
+        table.insert(CrModules, 1, _script)
     end
 end
 
@@ -113,28 +113,33 @@ local function installPackage()
             return RequiredModules[name]
         end
     
-        -- require
-        for i, NameSource in (_G._crmodules) do
+        print("--- / Requiring / ---")
+        for _, NameSource in CrModules do
             local name = NameSource.Name
             local source = NameSource.Source
     
             _G._initLabel.Text = "Requiring: "..name
             RequiredModules[name] = loadstring(source)()
             _G._initLabel.Text = "Successfully Required: "..name
+            print(_G._initLabel.Text)
         end
     
         -- init
+        print("--- / Initializing / ---")
         for name, module in RequiredModules do
             if type(module) == "table" and module.Init then
                 _G._initLabel.Text = "Initializing: "..name
+                print(_G._initLabel.Text)
                 module:Init()
             end
         end
     
         -- start
+        print("--- / Starting / ---")
         for name, module in RequiredModules do
             if type(module) == "table" and module.Start then
                 _G._initLabel.Text = "Starting: "..name
+                print(_G._initLabel.Text)
                 module:Start()
             end
         end
