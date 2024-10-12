@@ -56,6 +56,7 @@ return function(Title, Description, Mode)
 	
 	Notification.Container.Window.ColoredGradient = tree:Element("Frame", {
 		BackgroundColor3 = Modes[Mode],
+		BackgroundTransparency = 0.7,
 		
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.fromScale(0.5,0),
@@ -86,9 +87,9 @@ return function(Title, Description, Mode)
 	})
 	
 	Notification.Container.Window.TextDescription = tree:Element("TextLabel", {
-		AnchorPoint = Vector2.new(1,1),
-		Position = UDim2.fromScale(1,1),
-		Size = UDim2.new(1, -3, 0.488, 0),
+		AnchorPoint = Vector2.new(1,0),
+		Position = UDim2.fromScale(1, 0.3),
+		Size = UDim2.new(1, -3, 0.5, 0),
 		
 		BackgroundTransparency = 1,
 		FontFace = Font.fromName("SourceSansPro"),
@@ -96,10 +97,28 @@ return function(Title, Description, Mode)
 		TextColor3 = Color3.fromRGB(255,255,255),
 		TextScaled = true,
 		RichText = true,
-		TextXAlignment = Enum.TextXAlignment.Left
+		TextXAlignment = Enum.TextXAlignment.Center
 	})
 	
-	Notification.Container.Window.TextDescription = tree:Element("UITextSizeConstraint", {
+	Notification.Container.Window.CooldownBar = tree:Element("Frame", {
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundTransparency = 1,
+		Position = UDim2.fromScale(0.5, 0.98),
+		Size = UDim2.fromScale(0.989, 0.07),
+	})
+	
+	Notification.Container.Window.CooldownBar.BarFill = tree:Element("Frame", {
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundColor3 = Color3.fromRGB(255,255,255),
+		Position = UDim2.fromScale(0, 0.5),
+		Size = UDim2.fromScale(1,1)
+	})
+	
+	Notification.Container.Window.CooldownBar.BarFill.UICorner = tree:Element("UICorner", {
+		CornerRadius = UDim.new(1,0)
+	})
+	
+	Notification.Container.Window.TextDescription.UITextSizeConstraint = tree:Element("UITextSizeConstraint", {
 		MaxTextSize = 30,
 		MinTextSize = 1,
 	})
