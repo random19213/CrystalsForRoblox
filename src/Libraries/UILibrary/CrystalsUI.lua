@@ -4,6 +4,8 @@ local player = Players.LocalPlayer
 local _table = {}
 local _trees = {}
 
+local CrystalsUI = {}
+
 local TreeClass = {}
 TreeClass.__index = TreeClass
 
@@ -13,67 +15,18 @@ function TreeClass.new(name)
 	self._gui.Name = name
 	self._gui.Parent = player:WaitForChild("PlayerGui")
 	self._elements = {}
+	
 	return self
 end
 
-local CrystalsUI = {}
-
-function CrystalsUI.CreateTree(Name: string, behaviour)
-	if _trees[Name] then
-		for prop, value in behaviour do
-			_trees[Name]._gui[prop] = value
-		end
-
-		return _trees[Name]
-	end
-
-	local Tree = TreeClass.new(Name)
-
-	local self = setmetatable({}, {
-		__newindex = function(_, key, value)
-			if typeof(value) == "Instance" then
-				value.Name = key
-				local wrappedElement = CrystalsUI._element(value, Tree)
-				Tree._elements[key] = wrappedElement
-				value.Parent = Tree._gui
-			elseif typeof(value) == "string" and pcall(function() Instance.new(value) end) then
-				local newElement = Instance.new(value)
-				newElement.Parent = Tree._gui
-				newElement.Name = key
-				Tree._elements[key] = CrystalsUI._element(newElement, Tree)
-			elseif typeof(value) == "table" and value._isElement == true then
-				value._instance.Parent = Tree._gui
-				value._instance.Name = key
-				Tree._elements[key] = value
-			else
-				error(("Invalid element type provided for key '%s'. Expected an Instance or valid class string. Got: %s"):format(key, tostring(value)))
-			end
-		end,
-		__index = function(_, key)
-			return Tree._elements[key]
-		end
-	})
-
-	for prop, value in behaviour do
-		Tree._gui[prop] = value
-	end
-
-	_trees[Name] = Tree
-
-	return self, Tree
-end
-
-function CrystalsUI.Element(class, properties)
+function TreeClass:Element(class, properties)
 	local newElement = Instance.new(class)
 
 	properties = properties or {}
 
-	for prop, value in pairs(properties) do
-		newElement[prop] = value
-	end
+	local element = CrystalsUI._element(newElement, self)
 
-	local element = CrystalsUI._element(newElement, nil)
-	element:AddState("InitState", function(instance, self, blacklist)
+	element:AddState("InitState", function(instance, _, blacklist)
 		for prop, value in (properties) do
 			if blacklist[prop] == true then
 				continue
@@ -82,36 +35,80 @@ function CrystalsUI.Element(class, properties)
 		end
 	end)
 
+	element:ChangeState("InitState", {})
+
 	return element
+end
+
+
+function CrystalsUI.CreateTree(Name: string, behaviour)
+	if _trees[Name] then
+		behaviour = behaviour or {}
+		for prop, value in behaviour do
+			_trees[Name].Tree._gui[prop] = value
+		end
+
+		return _trees[Name].Proxy, _trees[Name].Tree
+	end
+
+	local Tree = TreeClass.new(Name)
+
+	local self = setmetatable({}, {
+		__newindex = function(_, key, value)
+			if typeof(value) == "table" and value._isElement == true then
+				value._instance.Name = key
+				value._instance.Parent = Tree._gui
+				
+				print("parenting")
+				print(value._instance.Parent)
+				
+				Tree._elements[value._instance:GetFullName()] = value
+			else
+				error(("Invalid element type provided for key '%s'. Expected an Instance or valid class string. Got: %s"):format(key, tostring(value)))
+			end
+			
+			
+			print(Tree)
+		end,
+		__index = function(_, key)
+			return Tree._elements[Tree._gui:GetFullName().."."..key]
+		end
+	})
+
+	for prop, value in behaviour do
+		Tree._gui[prop] = value
+	end
+
+	_trees[Name] = {
+		Proxy = self,
+		Tree = Tree
+	}
+
+	return self, Tree
 end
 
 local elementCache = {}
 
 local function addChild(self, key, value)
-	if self._isElement then
-		if typeof(value) == "Instance" then
-			value.Name = key
-			value.Parent = self._instance
-			local element = CrystalsUI._element(value, self._tree)
-			if self._tree then
-				self._tree._elements[key] = element
-			end
-		elseif typeof(value) == "table" and value._isElement == true then
-			value._tree = self._tree
+    local element
+    if self._isElement then
+        if typeof(value) == "table" and value._isElement == true then
+            value._tree = self._tree
 			value._instance.Name = key
 			value._instance.Parent = self._instance
-			if self._tree then
-				self._tree._elements[key] = value
+			
+			if value._instance:IsDescendantOf(player.PlayerGui) then
+				self._tree._elements[self._instance:GetFullName().."."..key] = value
 			end
-		elseif self._instance[key] ~= nil then
-			self._instance[key] = value
-		end
-	else
-		error("Attempt to modify a non-element instance.")
+        elseif self._instance[key] ~= nil then
+            self._instance[key] = value
+        end
+    else
+        error("Attempt to modify a non-element instance.")
 	end
 end
 
-function CrystalsUI._element(inst, tree)
+function CrystalsUI._element(inst, tree, parent)
 	if typeof(inst) ~= "Instance" then
 		error("Invalid element type provided. Expected an Instance.")
 	end
