@@ -1,8 +1,8 @@
 local CrystalsUI = _G._crystalRequire("CrystalsUI.lua")
 
 local Modes = {
-	["Success"] = Color3.fromRGB(46,80,131),
-	["Error"] = Color3.fromRGB(167, 33, 33)
+	["Success"] = Color3.fromRGB(83, 101, 131),
+	["Error"] = Color3.fromRGB(214, 76, 76)
 }
 
 local layoutOrder = 0
