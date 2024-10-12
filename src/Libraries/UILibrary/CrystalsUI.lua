@@ -23,24 +23,27 @@ function CrystalsUI.CreateTree(Name: string, behaviour)
 		for prop, value in behaviour do
 			_trees[Name]._gui[prop] = value
 		end
-		
+
 		return _trees[Name]
 	end
-	
+
 	local Tree = TreeClass.new(Name)
 
 	local self = setmetatable({}, {
 		__newindex = function(_, key, value)
 			if typeof(value) == "Instance" then
+				value.Name = key
 				local wrappedElement = CrystalsUI._element(value, Tree)
 				Tree._elements[key] = wrappedElement
 				value.Parent = Tree._gui
 			elseif typeof(value) == "string" and pcall(function() Instance.new(value) end) then
 				local newElement = Instance.new(value)
 				newElement.Parent = Tree._gui
+				newElement.Name = key
 				Tree._elements[key] = CrystalsUI._element(newElement, Tree)
 			elseif typeof(value) == "table" and value._isElement == true then
 				value._instance.Parent = Tree._gui
+				value._instance.Name = key
 				Tree._elements[key] = value
 			else
 				error(("Invalid element type provided for key '%s'. Expected an Instance or valid class string. Got: %s"):format(key, tostring(value)))
@@ -50,11 +53,11 @@ function CrystalsUI.CreateTree(Name: string, behaviour)
 			return Tree._elements[key]
 		end
 	})
-	
+
 	for prop, value in behaviour do
 		Tree._gui[prop] = value
 	end
-	
+
 	_trees[Name] = Tree
 
 	return self, Tree
@@ -82,15 +85,31 @@ function CrystalsUI.Element(class, properties)
 	return element
 end
 
-function CrystalsUI.StateParams(whitelist: boolean, props: {[string] : any})
-	return {
-		_stateParams = true,
-		_whitelist = whitelist or false,
-		_properties = props,
-	}
-end
-
 local elementCache = {}
+
+local function addChild(self, key, value)
+	if self._isElement then
+		if typeof(value) == "Instance" then
+			value.Name = key
+			value.Parent = self._instance
+			local element = CrystalsUI._element(value, self._tree)
+			if self._tree then
+				self._tree._elements[key] = element
+			end
+		elseif typeof(value) == "table" and value._isElement == true then
+			value._tree = self._tree
+			value._instance.Name = key
+			value._instance.Parent = self._instance
+			if self._tree then
+				self._tree._elements[key] = value
+			end
+		elseif self._instance[key] ~= nil then
+			self._instance[key] = value
+		end
+	else
+		error("Attempt to modify a non-element instance.")
+	end
+end
 
 function CrystalsUI._element(inst, tree)
 	if typeof(inst) ~= "Instance" then
@@ -111,6 +130,17 @@ function CrystalsUI._element(inst, tree)
 		_isElement = true,
 		_tree = tree,
 		
+		InsertChildren = function(self, children)
+			children = children or {}
+			
+			for name, value in children do
+				if type(name) == "number" then
+					name = tostring(newproxy())
+				end
+				addChild(self, name, value)
+			end
+		end,
+
 		ChangeState = function(self, stateName, blacklist : {}?)
 			blacklist = blacklist or {}
 			print("Changing state to:", stateName)
@@ -169,25 +199,7 @@ function CrystalsUI._element(inst, tree)
 	}, {
 		__newindex = function(self, key, value)
 			if key == "_tree" then return end
-			if self._isElement then
-				if typeof(value) == "Instance" then
-					value.Parent = self._instance
-					local element = CrystalsUI._element(value, self._tree)
-					if self._tree then
-						self._tree._elements[key] = element
-					end
-				elseif typeof(value) == "table" and value._isElement == true then
-					value._tree = self._tree
-					value._instance.Parent = self._instance
-					if self._tree then
-						self._tree._elements[key] = value
-					end
-				elseif self._instance[key] ~= nil then
-					self._instance[key] = value
-				end
-			else
-				error("Attempt to modify a non-element instance.")
-			end
+			addChild(self, key, value)
 		end,
 
 		__index = function(self, key)

@@ -144,7 +144,7 @@ local function installPackage()
             if type(module) == "table" and module.Start then
                 _G._initLabel.Text = "Starting: "..name
                 print(_G._initLabel.Text)
-                module:Start()
+                task.spawn(module.Start, module)
             end
         end
     
