@@ -1,24 +1,24 @@
 local TweenService = game:GetService("TweenService")
-local Modes = {
-	["Success"] = {
-		Color = Color3.fromRGB(83, 101, 131),
-		Icon = Textures.SuccessIcon
-	},
-	["Error"] = {
-		Color = Color3.fromRGB(214, 76, 76),
-		Icon = Textures.ErrorIcon,
-	},
-	["Info"] = {
-		Color = Color3.fromRGB(97, 81, 0),
-		Icon = Textures.InfoIcon
-	}
-}
-
 local layoutOrder = 0
 
 return function(Title, Description, Mode)
 	local CrystalsUI = _G._crystalRequire("CrystalsUI.lua")
 	local Textures = _G._crystalRequire("Textures.lua")
+
+	local Modes = {
+		["Success"] = {
+			Color = Color3.fromRGB(83, 101, 131),
+			Icon = Textures.SuccessIcon
+		},
+		["Error"] = {
+			Color = Color3.fromRGB(214, 76, 76),
+			Icon = Textures.ErrorIcon,
+		},
+		["Info"] = {
+			Color = Color3.fromRGB(97, 81, 0),
+			Icon = Textures.InfoIcon
+		}
+	}
 
 	local proxy, tree = CrystalsUI.CreateTree("Crystals4Bedwars")
 	
