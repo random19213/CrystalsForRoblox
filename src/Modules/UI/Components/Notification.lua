@@ -9,7 +9,7 @@ local Modes = {
 		Icon = Textures.ErrorIcon,
 	},
 	["Info"] = {
-		Color = Color3.fromRGB(157, 131, 0),
+		Color = Color3.fromRGB(97, 81, 0),
 		Icon = Textures.InfoIcon
 	}
 }
