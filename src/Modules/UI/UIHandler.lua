@@ -23,7 +23,7 @@ function UIHandler:Start()
     local mainFrame = _G._crystalTree.MainFrame
     
     mainFrame.NotificationsFrame = tree:Element("Frame", {
-        Size = UDim2.fromScale(0.15, 1),
+        Size = UDim2.fromScale(0.2, 1),
         Position = UDim2.fromScale(1,0.5),
         AnchorPoint = Vector2.new(1, 0.5),
         
@@ -31,69 +31,55 @@ function UIHandler:Start()
     })
     
     mainFrame.NotificationsFrame.UILIstLayout = tree:Element("UIListLayout", {
-        Padding = UDim.new(0, 20),
+        Padding = UDim.new(0.02, 0),
         VerticalAlignment = Enum.VerticalAlignment.Bottom,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        HorizontalAlignment = Enum.HorizontalAlignment.Right,
         SortOrder = Enum.SortOrder.LayoutOrder
     })
     
     mainFrame.NotificationsFrame.UIPadding = tree:Element("UIPadding", {
-        PaddingBottom = UDim.new(0,5),
-        PaddingLeft = UDim.new(0, 5),
-        PaddingRight = UDim.new(0, 5),
-        PaddingTop = UDim.new(0, 5),
+        PaddingBottom = UDim.new(0.015,0),
+        PaddingLeft = UDim.new(0.01, 0),
+        PaddingRight = UDim.new(0.015, 0),
+        PaddingTop = UDim.new(0.01, 0),
     })
 
-    self.Notify("Crystals", '<font color="rgb(46,80,131)">Initialization</font> was <font color="rgb(0, 255, 0)">successful</font>', "Success")
+    self.Notify("Crystals", '<font color="rgb(102, 168, 255)">Initialization</font> Was <font color="rgb(0, 255, 0)">Successful!</font>', 15, "Success")
+    self.Notify("Starting..", 'Press <font color="rgb(0, 255, 255)">RightShift</font> to open Menu', 15, "Info")
 end
 
 function UIHandler.Notify(title, description, duration, mode)
     local Notification = _G._crystalRequire("Notification.lua")
 
     local newNotification = Notification(title, description, mode)
-    _G._crystalTree.MainFrame.NotificationsFrame:InsertChildren({
+	mainFrame.NotificationsFrame:InsertChildren({
 		newNotification
 	})
-
-
-    local TweenTime = 0.5
-	local pos = newNotification.Container._instance.Position
-	local size = newNotification._instance.Size
-	newNotification._instance.Size = UDim2.fromScale(1, 0)
-	newNotification.Container._instance.Position = UDim2.fromScale(1.5, 0.5)
-	TweenService:Create(newNotification.Container._instance, TweenInfo.new(TweenTime), {Position = pos}):Play()
-	TweenService:Create(newNotification._instance, TweenInfo.new(TweenTime/2), {Size = size}):Play()
-	TweenService:Create(newNotification.Container.Window.CooldownBar.BarFill._instance, TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(0, 1)}):Play()
-
-	for _, instance in newNotification.Container._instance:GetDescendants() do
-		if instance:IsA("ImageLabel") then
-			local transp = instance.ImageTransparency
-			instance.ImageTransparency = 1
-			TweenService:Create(instance, TweenInfo.new(TweenTime), {ImageTransparency = transp}):Play()
-		elseif instance:IsA("Frame") then
-			local transp = instance.BackgroundTransparency    
-			instance.BackgroundTransparency = 1
-			TweenService:Create(instance, TweenInfo.new(TweenTime), {BackgroundTransparency = transp}):Play()
-		elseif  instance:IsA("TextLabel") then
-			local transp = instance.TextTransparency    
-			instance.TextTransparency = 1
-			TweenService:Create(instance, TweenInfo.new(TweenTime), {TextTransparency = transp}):Play()
+	
+	newNotification:ChangeState("Show", {}, 0.4)
+	newNotification:ChangeState("StartTimer", {}, duration)
+	
+	task.wait(0.4)
+	
+	local thread
+	local conn
+	
+	thread = task.delay(duration, function()
+		if conn then
+			conn:Disconnect()
+			conn = nil
 		end
-	end
 
-	task.delay(duration, function()
-		for _, instance in newNotification.Container._instance:GetDescendants() do
-			if instance:IsA("ImageLabel") then
-				TweenService:Create(instance, TweenInfo.new(TweenTime), {ImageTransparency = 1}):Play()
-			elseif instance:IsA("Frame") then
-				TweenService:Create(instance, TweenInfo.new(TweenTime), {BackgroundTransparency = 1}):Play()
-			elseif  instance:IsA("TextLabel") then
-				TweenService:Create(instance, TweenInfo.new(TweenTime), {TextTransparency = 1}):Play()
-			end
-		end
-		
-		task.wait(TweenTime)
-		newNotification:Destroy()
+		newNotification:ChangeState("Hide", _, _,0.2)
+	end)
+	
+	conn = newNotification.Container.Window.HideButton:Connect("clicked", function()
+		task.cancel(thread)
+		thread = nil
+		conn:Disconnect()
+		conn = nil
+
+		newNotification:ChangeState("Hide", _, 0.2)
 	end)
 end
 
