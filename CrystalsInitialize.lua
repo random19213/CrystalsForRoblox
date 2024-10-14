@@ -97,7 +97,7 @@ local function installPackage()
     gui.IgnoreGuiInset = true
 
     local initLabel = Instance.new("TextLabel", gui)
-    initLabel.Size = UDim2.fromScale(0.3, 0.1)
+    initLabel.Size = UDim2.fromScale(1, 0.1)
     initLabel.AnchorPoint = Vector2.new(0.5, 0)
     initLabel.Position = UDim2.fromScale(0.5, 0.05)
     initLabel.BackgroundTransparency = 1
@@ -105,6 +105,11 @@ local function installPackage()
     initLabel.TextStrokeTransparency = 0
     initLabel.TextScaled = true
     initLabel.Text = "Fetching ".._G.CLIENT_NAME.." Package"
+
+    local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+    UITextSizeConstraint.MaxTextSize = 40
+    UITextSizeConstraint.MinTextSize = 1
+    UITextSizeConstraint.Parent = initLabel
 
     _G._initLabel = initLabel
 
