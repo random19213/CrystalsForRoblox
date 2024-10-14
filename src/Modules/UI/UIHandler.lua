@@ -70,7 +70,7 @@ function UIHandler.Notify(title, description, duration, mode)
 			conn = nil
 		end
 
-		newNotification:ChangeState("Hide", _, _,0.2)
+		newNotification:ChangeState("Hide", _, 0.2)
 	end)
 	
 	conn = newNotification.Container.Window.HideButton:Connect("clicked", function()
