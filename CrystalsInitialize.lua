@@ -97,11 +97,12 @@ local function installPackage()
     gui.IgnoreGuiInset = true
 
     local initLabel = Instance.new("TextLabel", gui)
-    initLabel.Size = UDim2.fromScale(1, 0.2)
+    initLabel.Size = UDim2.fromScale(0.3, 0.1)
     initLabel.AnchorPoint = Vector2.new(0.5, 0)
-    initLabel.Position = UDim2.fromScale(0.5, 0)
+    initLabel.Position = UDim2.fromScale(0.5, 0.05)
     initLabel.BackgroundTransparency = 1
     initLabel.TextColor3 = Color3.fromRGB(255,255, 255)
+    initLabel.TextStrokeTransparency = 0
     initLabel.TextScaled = true
     initLabel.Text = "Fetching ".._G.CLIENT_NAME.." Package"
 
