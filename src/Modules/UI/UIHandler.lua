@@ -52,7 +52,7 @@ function UIHandler.Notify(title, description, duration, mode)
     local Notification = _G._crystalRequire("Notification.lua")
 
     local newNotification = Notification(title, description, mode)
-	mainFrame.NotificationsFrame:InsertChildren({
+	_G._crystalTree.MainFrame.NotificationsFrame:InsertChildren({
 		newNotification
 	})
 	
