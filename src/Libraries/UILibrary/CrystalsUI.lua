@@ -138,12 +138,12 @@ function CrystalsUI._element(inst, tree, parent)
 			end
 		end,
 
-		ChangeState = function(self, stateName, blacklist : {}?)
+		ChangeState = function(self, stateName, blacklist : {}?, ...)
 			blacklist = blacklist or {}
 			print("Changing state to:", stateName)
 			local state = self._states[stateName]
 			if state then
-				task.spawn(state, self._instance, self, blacklist)
+				task.spawn(state, self._instance, self, blacklist, ...)
 			else
 				warn("No state found for:", stateName)
 			end
@@ -162,28 +162,26 @@ function CrystalsUI._element(inst, tree, parent)
 			table.insert(self._events[eventName], callback)
 
 			if eventName == "hover:enter" and inst:IsA("GuiObject") then
-				inst.MouseEnter:Connect(function()
+				return inst.MouseEnter:Connect(function()
 					self:Trigger("hover:enter")
 				end)
 			elseif eventName == "hover:exit" and inst:IsA("GuiObject") then
-				inst.MouseLeave:Connect(function()
+				return inst.MouseLeave:Connect(function()
 					self:Trigger("hover:exit")
 				end)
 			elseif eventName == "mouse:down" and inst:IsA("GuiButton") then
-				inst.MouseButton1Down:Connect(function()
+				return inst.MouseButton1Down:Connect(function()
 					self:Trigger("mouse:down")
 				end)
 			elseif eventName == "mouse:up" and inst:IsA("GuiButton") then
-				inst.MouseButton1Up:Connect(function()
+				return inst.MouseButton1Up:Connect(function()
 					self:Trigger("mouse:up")
 				end)
 			elseif eventName == "clicked" and inst:IsA("GuiButton") then
-				inst.MouseButton1Click:Connect(function()
+				return inst.MouseButton1Click:Connect(function()
 					self:Trigger("clicked")
 				end)
 			end
-
-			return self
 		end,
 
 		Trigger = function(self, eventName, ...)
