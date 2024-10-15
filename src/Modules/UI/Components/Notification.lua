@@ -53,7 +53,7 @@ return function(Title, Description, Mode)
 		ScaleType = Enum.ScaleType.Fit,
 		
 		BackgroundTransparency = 1,
-		ImageTransparency = 0.3,
+		ImageTransparency = 0.5,
 	})
 	
 	Notification.Container.Window = tree:Element("Frame", {
@@ -61,7 +61,7 @@ return function(Title, Description, Mode)
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
 
-		BackgroundTransparency = 0,
+		BackgroundTransparency = 0.3,
 		BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	})
 	
