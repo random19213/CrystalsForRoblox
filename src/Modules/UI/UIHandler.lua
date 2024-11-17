@@ -3,7 +3,7 @@ local TweenService = game:GetService("TweenService")
 local UIHandler = {}
 
 function UIHandler:Start()
-    local CrystalsUI = _G._crystalRequire("src/Libraries/UILibrary/CrystalsUI.lua")
+    local CrystalsUI = _G._require("src/Libraries/UILibrary/CrystalsUI.lua")
 
     _G._crystalTree, tree = CrystalsUI.CreateTree("Crystals4Bedwars", {
         Enabled = true,
@@ -49,7 +49,7 @@ function UIHandler:Start()
 end
 
 function UIHandler.Notify(title, description, duration, mode)
-    local Notification = _G._crystalRequire("src/Modules/UI/Components/Notification.lua")
+    local Notification = _G._require("src/Modules/UI/Components/Notification.lua")
 
     local newNotification = Notification(title, description, mode)
 	_G._crystalTree.MainFrame.NotificationsFrame:InsertChildren({

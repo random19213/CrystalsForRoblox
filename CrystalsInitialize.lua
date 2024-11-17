@@ -75,7 +75,7 @@ end
 
 local function loadAndRequireFiles(files)
     for _, filePath in (files) do
-        if filePath:match(".lua$") then
+        if filePath:match(".lua$") and filePath:match("src") then
             local source = readfile(filePath)
 
             _G._initLabel.Text = "Requiring: " .. filePath
@@ -135,10 +135,7 @@ local function installPackage()
     end
 
     local files = getFiles(_G.CLIENT_NAME)
-    for _, filePath in files do
-        print(filePath)
-    end
-
+    print(#files)
     if files then
         loadAndRequireFiles(files)
 

@@ -2,8 +2,8 @@ local TweenService = game:GetService("TweenService")
 local layoutOrder = 0
 
 return function(Title, Description, Mode)
-	local CrystalsUI = _G._crystalRequire("src/Libraries/UILibrary/CrystalsUI.lua")
-	local Textures = _G._crystalRequire("src/Modules/Textures.lua")
+	local CrystalsUI = _G._require("src/Libraries/UILibrary/CrystalsUI.lua")
+	local Textures = _G._require("src/Modules/Textures.lua")
 
 	local Modes = {
 		["Success"] = {
