@@ -8,7 +8,17 @@ local player = Players.LocalPlayer
 local CrModules = {}
 local RequiredModules = {}
 
+-- Check if a file exists
+local function isfile(file)
+    local suc, res = pcall(function() return readfile(file) end)
+    return suc and res ~= nil
+end
+
 local function fetchFileFromRawURL(path)
+    if isfile(path) then
+        return readfile(path)
+    end
+
     local url = string.format("https://raw.githubusercontent.com/%s/%s/main/%s", "random19213", "CrystalsForRoblox", path)
     local s, r = pcall(game.HttpGet, game, url)
 
@@ -40,18 +50,22 @@ local function fetchAllFiles(directory)
     local data = HttpService:JSONDecode(r)
 
     for _, item in pairs(data) do
+        if item.path == nil then continue end
+        local args = item.path:split("/")
+        local name = args[#args]
+
         if item.type == "file" then
+            _G._initLabel.Text = "Fetching: "..name
             local content = fetchFileFromRawURL(item.path)
             files[item.path] = content 
-
-            local args = item.path:split("/")
-            local name = args[#args]
-
-            _G._initLabel.Text = "Fetching: "..name
+            
+            writefile(_G.CLIENT_NAME.."/"..item.path, content)
         elseif item.type == "dir" then
+            makefolder(_G.CLIENT_NAME.."/"..item.path)
+
             local subFiles = fetchAllFiles(item.path)
             for subPath, content in pairs(subFiles) do
-                files[subPath] = content  
+                files[subPath] = content
             end
         end
     end
@@ -59,39 +73,39 @@ local function fetchAllFiles(directory)
     return files
 end
 
-local function createTextFilesFromFiles(files)
-    local parentFolder = Instance.new("Folder")
-    parentFolder.Name = _G.CLIENT_NAME
-    parentFolder.Parent = ReplicatedFirst
+local function loadAndRequireFiles(files)
+    for _, filePath in (files) do
+        if filePath:match(".lua$") then
+            local source = readfile(filePath)
 
-    for path, content in files do
-        local segments = path:split("/")
-        local parent = parentFolder
-
-        for i = 1, #segments - 1 do
-            local segment = segments[i]
-            local folder = parent:FindFirstChild(segment)
-            if not folder then
-                folder = Instance.new("Folder")
-                folder.Name = segment
-                folder.Parent = parent
-            end
-            parent = folder 
+            _G._initLabel.Text = "Requiring: " .. filePath
+            RequiredModules[filePath] = loadstring(source)()
+            _G._initLabel.Text = "Successfully Required: " .. filePath
         end
-
-        local name = segments[#segments]
-        local textValue = Instance.new("StringValue")
-        textValue.Value = content
-        textValue.Name = name
-        textValue.Parent = parent
-       
-        local _script = {Name = name, Source = content}
-        table.insert(CrModules, 1, _script)
     end
 end
 
+local function getFiles(path)
+    local files = {}
+
+    for i, filePath in listfiles(path) do
+        local arguments = filePath:split("/")
+        local fileName = arguments[#arguments]
+
+        if fileName:match("%.") == nil then -- its a folder
+            local subFiles = getFiles(filePath)
+            for _, subFilePath in subFiles do
+                table.insert(files, subFilePath)
+            end
+        else
+            table.insert(files, filePath)
+        end
+    end
+
+    return files
+end
+
 local function installPackage()
-    
     local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
     gui.DisplayOrder = 999
     gui.IgnoreGuiInset = true
@@ -101,11 +115,11 @@ local function installPackage()
     initLabel.AnchorPoint = Vector2.new(0.5, 0)
     initLabel.Position = UDim2.fromScale(0.5, 0.05)
     initLabel.BackgroundTransparency = 1
-    initLabel.TextColor3 = Color3.fromRGB(255,255, 255)
+    initLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     initLabel.TextStrokeTransparency = 0
-    initLabel.TextStrokeColor3 = Color3.fromRGB(0,0,0)
+    initLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     initLabel.TextScaled = true
-    initLabel.Text = "Fetching ".._G.CLIENT_NAME.." Package"
+    initLabel.Text = "Fetching " .. _G.CLIENT_NAME .. " Package"
 
     local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
     UITextSizeConstraint.MaxTextSize = 40
@@ -114,50 +128,42 @@ local function installPackage()
 
     _G._initLabel = initLabel
 
-    local files = fetchAllFiles("src")
-    if files then
-        createTextFilesFromFiles(files)
-        print("Package installed successfully!")
-        _G._initLabel.Text = "Package installed successfully!"
+    makefolder(_G.CLIENT_NAME)
+    if isfile(_G.CLIENT_NAME.."/debug.txt") then
+    else
+        fetchAllFiles("")
+    end
 
-        _G._crystalRequire = function(name)
-            return RequiredModules[name]
+    local files = getFiles(_G.CLIENT_NAME)
+    for _, filePath in files do
+        print(filePath)
+    end
+
+    if files then
+        loadAndRequireFiles(files)
+
+        _G._require = function(path)
+            return RequiredModules["./".._G.CLIENT_NAME.."/"..path]
         end
-    
-        print("--- / Requiring / ---")
-        for _, NameSource in CrModules do
-            local name = NameSource.Name
-            local source = NameSource.Source
-    
-            _G._initLabel.Text = "Requiring: "..name
-            RequiredModules[name] = loadstring(source)()
-            _G._initLabel.Text = "Successfully Required: "..name
-            print(_G._initLabel.Text)
-        end
-    
-        -- init
-        print("--- / Initializing / ---")
+
+        _G._initLabel.Text = "Package installed successfully!"
         for name, module in RequiredModules do
             if type(module) == "table" and module.Init then
-                _G._initLabel.Text = "Initializing: "..name
-                print(_G._initLabel.Text)
+                _G._initLabel.Text = "Initializing: " .. name
                 module:Init()
             end
         end
-    
-        -- start
-        print("--- / Starting / ---")
+
         for name, module in RequiredModules do
             if type(module) == "table" and module.Start then
-                _G._initLabel.Text = "Starting: "..name
-                print(_G._initLabel.Text)
+                _G._initLabel.Text = "Starting: " .. name
                 task.spawn(module.Start, module)
             end
         end
-    
-        _G._initLabel.Parent:Destroy()
+
+        gui:Destroy()
     else
-         _G._initLabel.Text = "Failed to fetch package"
+        _G._initLabel.Text = "Failed to fetch package"
         error("Failed to fetch package")
     end
 end
