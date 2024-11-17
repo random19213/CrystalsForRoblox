@@ -2,7 +2,7 @@ local TweenService = game:GetService("TweenService")
 
 local UIHandler = {}
 
-function UIHandler:Start()
+function UIHandler:commit()
     local CrystalsUI = _G._require("src/Libraries/UILibrary/CrystalsUI.lua")
 
     _G._crystalTree, tree = CrystalsUI.CreateTree("Crystals4Bedwars", {
