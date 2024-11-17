@@ -1,6 +1,6 @@
 local MainModule = {}
 
-function MainModule:Init()
+function MainModule:Start()
    local UIHandler = _G._require("src/Modules/UI/UIHandler.lua")
    UIHandler:commit()
 end

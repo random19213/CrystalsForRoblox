@@ -137,24 +137,28 @@ local function installPackage()
     local files = getFiles(_G.CLIENT_NAME)
     print(#files)
     if files then
-        loadAndRequireFiles(files)
-
         _G._require = function(path)
-            return RequiredModules["./".._G.CLIENT_NAME.."/"..path]
+            local localPath = "./".._G.CLIENT_NAME.."/"..path
+            --[[
+            required modules : {[filePath]: content}
+            ]]
+            return RequiredModules[localPath]
         end
 
+        loadAndRequireFiles(files)
+
         _G._initLabel.Text = "Package installed successfully!"
-        for name, module in RequiredModules do
-            if type(module) == "table" and module.Init then
-                _G._initLabel.Text = "Initializing: " .. name
-                module:Init()
+        for filePath, content in RequiredModules do
+            if type(content) == "table" and content.Init then
+                _G._initLabel.Text = "Initializing: " .. filePath
+                content:Init()
             end
         end
 
-        for name, module in RequiredModules do
-            if type(module) == "table" and module.Start then
-                _G._initLabel.Text = "Starting: " .. name
-                task.spawn(module.Start, module)
+        for filePath, content in RequiredModules do
+            if type(content) == "table" and content.Start then
+                _G._initLabel.Text = "Starting: " .. filePath
+                task.spawn(content.Start, content)
             end
         end
 
