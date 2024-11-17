@@ -138,11 +138,11 @@ local function installPackage()
     print(#files)
     if files then
         _G._require = function(path)
-            local localPath = "./".._G.CLIENT_NAME.."/"..path
+            local localPath = _G.CLIENT_NAME.."/"..path
             --[[
             required modules : {[filePath]: content}
             ]]
-            return RequiredModules[localPath]
+            return readfile(localPath)
         end
 
         loadAndRequireFiles(files)
