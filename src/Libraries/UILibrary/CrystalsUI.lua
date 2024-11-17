@@ -74,7 +74,7 @@ function CrystalsUI.CreateTree(Name: string, behaviour)
 			return Tree._elements[Tree._gui:GetFullName().."."..key]
 		end
 	})
-
+	behaviour = behaviour or {}
 	for prop, value in behaviour do
 		Tree._gui[prop] = value
 	end

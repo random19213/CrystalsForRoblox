@@ -142,7 +142,7 @@ local function installPackage()
             --[[
             required modules : {[filePath]: content}
             ]]
-            return readfile(localPath)
+            return loadstring(readfile(localPath))()
         end
 
         loadAndRequireFiles(files)
