@@ -109,6 +109,7 @@ local function installPackage()
     local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
     gui.DisplayOrder = 999
     gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
 
     local initLabel = Instance.new("TextLabel", gui)
     initLabel.Size = UDim2.fromScale(1, 0.1)
