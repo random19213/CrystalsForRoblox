@@ -178,6 +178,21 @@ function UIHandler:commit()
         }
     })
     
+    _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.LogoIconTab.MoveIcon = Widget({
+        AnchorPoint = Vector2.new(0, 0.5),
+        Position = UDim2.new(0, 7, 0.5, 0),
+        Size = UDim2.fromOffset(24, 24),
+        BackgroundTransparency = 1,
+        ImageTransparency = 0.4,
+        ZIndex = 2,
+        DragData = {
+            Enabled = true,
+            Relatives = {
+                _G._crystalTree.MainFrame.MainMenuWidget,
+            }
+        }
+    })
+    
     _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.LogoIconTab.MoveIcon.ImageLabel = tree:Element("ImageLabel", {
         AnchorPoint = Vector2.new(0, 0.5),
         Position = UDim2.new(0, 0, 0.5, 0),
@@ -187,14 +202,6 @@ function UIHandler:commit()
         ScaleType = Enum.ScaleType.Fit,
         ImageTransparency = 0.4,
         ZIndex = 3
-    })
-    
-    _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.CombatTab = tree:Element("Frame", {
-        BackgroundTransparency = 0.2,
-        Size = UDim2.new(0, 200, 1, 0),
-        BorderSizePixel = 0,
-        LayoutOrder = -2,
-        BackgroundColor3 = Color3.fromRGB(163, 184, 203)
     })
     
     _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.CombatTab.ActivateButton = tree:Element("TextButton", {
