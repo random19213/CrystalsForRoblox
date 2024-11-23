@@ -76,10 +76,8 @@ end
 local function loadAndRequireFiles(files)
     for _, filePath in (files) do
         if filePath:match(".lua$") and filePath:match("src") then
-            local source = readfile(filePath)
-
             _G._initLabel.Text = "Requiring: " .. filePath
-            RequiredModules[filePath] = loadstring(source)()
+            RequiredModules[filePath] = _G._require(filePath)
             _G._initLabel.Text = "Successfully Required: " .. filePath
         end
     end
