@@ -3,7 +3,7 @@ local InputModule = {}
 local UserInputService = game:GetService("UserInputService")
 
 local inputConnections = {}
-local modifierKeys = {Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift, Enum.KeyCode.LeftControl, Enum.KeyCode.RightControl, Enum.KeyCode.LeftAlt, Enum.KeyCode.RightAlt}
+local modifierKeys = {Enum.KeyCode.LeftShift, Enum.KeyCode.LeftControl, Enum.KeyCode.RightControl, Enum.KeyCode.LeftAlt, Enum.KeyCode.RightAlt}
 
 local function isModifierKey(keyCode)
 	for _, modKey in ipairs(modifierKeys) do

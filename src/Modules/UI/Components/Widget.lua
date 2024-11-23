@@ -1,6 +1,8 @@
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local CrystalsUI = require(script.Parent.Parent.CrystalsUI)
+
 local function createGrip(side, data)
 	local grip = Instance.new("Frame")
 	grip.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -31,11 +33,9 @@ local function createGrip(side, data)
 end
 
 return function(properties)
-    local CrystalsUI = _G._require("src/Libraries/UILibrary/CrystalsUI.lua")
-    
-	local Dragable = properties.Dragable; properties.Dragable = nil
+	local DragData = properties.DragData; properties.DragData = nil
 	local GripData = properties.GripData; properties.GripData = nil
-
+	
 	local defaultProperties = {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
@@ -43,31 +43,42 @@ return function(properties)
 		BackgroundColor3 = Color3.fromRGB(255,255,255),
 		BorderSizePixel = 0
 	}
-
+	
 	for name, value in properties do
 		defaultProperties[name] = value
 	end
 
 	local proxy, tree = CrystalsUI.CreateTree("Crystals4Bedwars")
 	local Widget = tree:Element("Frame", defaultProperties)
-
+	
+	if DragData and DragData.Relatives then
+		table.insert(DragData.Relatives, Widget)
+	end
+	
 	local WidgetDragging = false
 	local dragInput, mousePos, framePos, frameSize
 	local WidgetResizing = false
 	local resizeDir = nil
 	local updatingPos, updatingSize
 
-	if Dragable then
+	if DragData and DragData.Enabled then
 		Widget.InputBegan:Connect(function(input)
 			task.defer(function()
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					WidgetDragging = true
 					mousePos = UserInputService:GetMouseLocation()
-					framePos = Widget.Position
+					framePos = {}
+					
+					for _, relativeWidget in DragData.Relatives do
+						framePos[relativeWidget] = relativeWidget.Position
+					end
+					
+					Widget:Trigger("drag:began")
 					
 					input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
 							WidgetDragging = false
+							Widget:Trigger("drag:end")
 						end
 					end)
 				end
@@ -119,7 +130,7 @@ return function(properties)
 	end]]
 	
 	
-	if GripData or Dragable then
+	if GripData or (DragData and DragData.Enabled) then
 		currentExtendForSide = {
 			Right = 0,
 			Left = 0,
@@ -138,8 +149,20 @@ return function(properties)
 				
 				if WidgetDragging then	
 					local positionDelta = currentMousePos - mousePos
-					local pos = UDim2.new(framePos.X.Scale, framePos.X.Offset + positionDelta.X, framePos.Y.Scale, framePos.Y.Offset + positionDelta.Y)
-					TweenService:Create(Widget._instance, TweenInfo.new(.1), {Position = pos}):Play()
+					local relatives = DragData.Relatives
+					
+					for _, relative in relatives do
+						for i, _relative in relatives do
+							if _relative._instance:IsDescendantOf(relative._instance) then
+								table.remove(relatives, i)
+							end
+						end
+					end
+					
+					for _, relative in DragData.Relatives do
+						local pos = UDim2.new(framePos[relative].X.Scale, framePos[relative].X.Offset + positionDelta.X, framePos[relative].Y.Scale, framePos[relative].Y.Offset + positionDelta.Y)
+						TweenService:Create(relative._instance, TweenInfo.new(.1), {Position = pos}):Play()
+					end
 				end	
 			--[[
 			elseif WidgetResizing then
