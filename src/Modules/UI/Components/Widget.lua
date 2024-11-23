@@ -1,7 +1,7 @@
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local CrystalsUI = require(script.Parent.Parent.CrystalsUI)
+local CrystalsUI = _G._require("src/Libraries/UILibrary/CrystalsUI.lua")
 
 local function createGrip(side, data)
 	local grip = Instance.new("Frame")

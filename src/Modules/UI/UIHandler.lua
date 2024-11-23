@@ -7,6 +7,9 @@ function UIHandler:commit()
     local Widget = _G._require("src/Modules/UI/Components/Widget.lua")
     local StateManager = _G._require("src/StateManager.lua")
     local Input = _G._require("src/Modules/Input.lua")
+    local Textures = _G._require("src/Modules/Textures.lua")
+
+    local ACCENT_COLOR = Color3.fromRGB(11, 120, 250)
 
     _G._crystalTree, tree = CrystalsUI.CreateTree("Crystals4Bedwars", {
         Enabled = true,
