@@ -183,7 +183,6 @@ function UIHandler:commit()
         Position = UDim2.new(0, 7, 0.5, 0),
         Size = UDim2.fromOffset(24, 24),
         BackgroundTransparency = 1,
-        ImageTransparency = 0.4,
         ZIndex = 2,
         DragData = {
             Enabled = true,
