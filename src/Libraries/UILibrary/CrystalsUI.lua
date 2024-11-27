@@ -31,7 +31,11 @@ function TreeClass:Element(class, properties)
 			if blacklist[prop] == true then
 				continue
 			end
-			instance[prop] = value
+			
+			pcall(function()
+				instance[prop] = value
+			end)
+		
 		end
 	end)
 
@@ -42,8 +46,8 @@ end
 
 
 function CrystalsUI.CreateTree(Name: string, behaviour)
-	behaviour = behaviour or {}
 	if _trees[Name] then
+		behaviour = behaviour or {}
 		for prop, value in behaviour do
 			_trees[Name].Tree._gui[prop] = value
 		end

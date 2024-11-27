@@ -151,7 +151,6 @@ _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.LogoIconTab.CrystalsLabel = 
 	
 	Image = Textures.CrystalsText,
 	ScaleType = Enum.ScaleType.Fit,
-	ResampleMode = Enum.ResamplerMode.Pixelated,
 })
 
 _G._crystalTree.MainFrame.MainMenuWidget.TabsFolder.LogoIconTab.SettingsIcon = tree:Element("ImageButton", {
