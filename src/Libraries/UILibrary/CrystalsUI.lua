@@ -46,8 +46,8 @@ end
 
 
 function CrystalsUI.CreateTree(Name: string, behaviour)
+	behaviour = behaviour or {}
 	if _trees[Name] then
-		behaviour = behaviour or {}
 		for prop, value in behaviour do
 			_trees[Name].Tree._gui[prop] = value
 		end
